@@ -1,9 +1,8 @@
+import { type Session, type User } from '@prisma/client';
+import cookieParser from 'cookie-parser';
+import express, { type Request } from 'express';
 import './env';
 import { env } from './env';
-import { type Session, type User } from '@prisma/client';
-import express, { type Request } from 'express';
-import requireApiSession from './middleware/requireApiSession';
-import cookieParser from 'cookie-parser';
 import router from './router';
 
 
