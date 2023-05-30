@@ -22,7 +22,7 @@ const config = {
     return [
       {
         source: '/api/extra/:path*',
-        destination: 'http://localhost:3001/api/extra/:path*',
+        destination: 'http://localhost:3001/:path*',
       },
     ];
   },
