@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["jsonProtocol"]
 }
 
@@ -56,6 +56,8 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    player        Player[]
+    images        Image[]
 }
 
 model VerificationToken {
@@ -64,4 +66,73 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Player {
+    id        String   @id @db.Uuid
+    addedById String   @db.Uuid
+    about     String   @default("Я играю в футбол")
+    name      String   @db.VarChar(64)
+    imageId   String?  @db.Uuid
+    createdAt DateTime @db.Timestamptz(6)
+    updatedAt DateTime @db.Timestamptz(6)
+
+    user   User    @relation(fields: [userId], references: [id])
+    userId String
+    fields Field[]
+}
+
+model Field {
+    id        String   @id @db.Uuid
+    name      String   @db.VarChar(64)
+    createdAt DateTime @db.Timestamptz(6)
+    updatedAt DateTime @db.Timestamptz(6)
+
+    player   Player @relation(fields: [playerId], references: [id])
+    playerId String @db.Uuid
+
+    tiles Tile[]
+}
+
+model Tile {
+    id        String   @id @db.Uuid
+    name      String   @db.VarChar(64)
+    createdAt DateTime @db.Timestamptz(6)
+    updatedAt DateTime @db.Timestamptz(6)
+
+    field   Field  @relation(fields: [fieldId], references: [id])
+    fieldId String @db.Uuid
+}
+
+model Image {
+    key       String   @id
+    createdAt DateTime @db.Timestamptz(6)
+    updatedAt DateTime @db.Timestamptz(6)
+
+    name String
+    url  String
+    size Int
+
+    addedBy   User   @relation(fields: [addedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    addedById String
+}
+
+model Content {
+    id             String  @id @db.Uuid
+    addedById      String  @db.Uuid
+    ownedById      String  @db.Uuid
+    label          String  @default("Название") @db.VarChar(16)
+    title          String  @default("Длинное название") @db.VarChar(128)
+    altColor       String  @default("#2b2744") @db.VarChar(10)
+    fontColor      String  @default("#ffffff") @db.VarChar(10)
+    hours          Decimal @default(0) @db.Decimal(3, 1)
+    deleted        Boolean @default(false)
+    imageId        String?
+    hasCoop        Boolean @default(false)
+    maxCoopPlayers Int     @default(1)
+    hasDifficulty  Boolean @default(false)
+
+    createdAt    DateTime @db.Timestamptz(6)
+    updatedAt    DateTime @db.Timestamptz(6)
+    endCondition String   @default("")
 }
