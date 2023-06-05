@@ -33,6 +33,6 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs"
-  ],
+, "src/components/Three/Models/Bread.tsx"  ],
   "exclude": ["node_modules"]
 }
