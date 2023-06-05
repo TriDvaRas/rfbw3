@@ -20,7 +20,7 @@ export async function setupPlayerFieldBase(playerId: string) {
     })
 }
 function getDefaultPlayerNodes(rootX: number, rootY: number) {
-    const nodes: {
+    const fieldNodes: {
         x: number,
         y: number,
         type: PlayerTileType
@@ -294,5 +294,5 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
             ])
             break;
     }
-    return nodes
+    return fieldNodes
 }
