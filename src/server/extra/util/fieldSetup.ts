@@ -20,7 +20,7 @@ export async function setupPlayerFieldBase(playerId: string) {
     })
 }
 function getDefaultPlayerNodes(rootX: number, rootY: number) {
-    const fieldNodes: {
+    const nodes: {
         x: number,
         y: number,
         type: PlayerTileType
@@ -32,7 +32,7 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
 
     switch (rootX % 2) {
         case 0:
-            fieldNodes.push(...[
+            nodes.push(...[
                 {
                     x: rootX,
                     y: rootY - 1,
@@ -65,7 +65,7 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
                 },
             ])
             //r2
-            fieldNodes.push(...[
+            nodes.push(...[
                 {
                     x: rootX,
                     y: rootY - 2,
@@ -128,7 +128,7 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
                 },
             ])
             //r3
-            fieldNodes.push(...[
+            nodes.push(...[
                 {
                     x: rootX,
                     y: rootY - 3,
@@ -163,7 +163,7 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
             break;
         case 1:
             //r1
-            fieldNodes.push(...[
+            nodes.push(...[
                 {
                     x: rootX,
                     y: rootY - 1,
@@ -196,7 +196,7 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
                 },
             ])
             //r2
-            fieldNodes.push(...[
+            nodes.push(...[
 
                 {
                     x: rootX,
@@ -260,7 +260,7 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
                 },
             ])
             //r3
-            fieldNodes.push(...[
+            nodes.push(...[
                 {
                     x: rootX,
                     y: rootY - 3,
@@ -294,5 +294,5 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
             ])
             break;
     }
-    return fieldNodes
+    return nodes
 }
