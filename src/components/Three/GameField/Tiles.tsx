@@ -1,8 +1,8 @@
 import { Float, Html, Line, Shadow } from '@react-three/drei'
 import { Tile } from '../Models/Tile'
 import { degreesToRadians } from '../util/util'
-import { MazeEdge, MazeNode } from '../../../server/extra/lib/getMazeTiles'
 import { Island } from '../Models/Island'
+import { MazeNode } from '../../../server/extra/util/graph'
 
 
 const SQRT3 = Math.sqrt(3)

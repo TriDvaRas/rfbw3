@@ -1,17 +1,13 @@
-import { Cloud, Loader, OrbitControls, SpotLight, Stage, Stars, Stats } from "@react-three/drei";
+import { Loader, OrbitControls, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import _ from "lodash";
-import { useQuery } from "react-query";
+import { useControls } from "leva";
+import useSWR from "swr";
 import Lights from "./GameField/Lights";
-import Moon from "./GameField/Moon";
 import Sun from "./GameField/Sun";
 import { Tiles } from "./GameField/Tiles";
 import { WaterPlane } from "./GameField/WaterPlane";
 import { degreesToRadians } from "./util/util";
-import { useControls } from "leva";
-import { MazeNode } from "../../server/extra/lib/getMazeTiles";
-import { Suspense } from "react";
-import useSWR from "swr";
+import { MazeNode } from "../../server/extra/util/graph";
 
 
 

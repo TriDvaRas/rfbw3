@@ -21,7 +21,7 @@ datasource db {
 //     updatedAt DateTime @updatedAt
 // }
 
-// Necessary for Next auth
+//!  Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -68,59 +68,137 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model Player {
-    id        String   @id @db.Uuid
-    addedById String   @db.Uuid
-    about     String   @default("Я играю в футбол")
-    name      String   @db.VarChar(64)
-    imageId   String?  @db.Uuid
-    createdAt DateTime @db.Timestamptz(6)
-    updatedAt DateTime @db.Timestamptz(6)
-
-    user   User    @relation(fields: [userId], references: [id])
-    userId String
-    fields Field[]
-}
-
-model Field {
-    id        String   @id @db.Uuid
-    name      String   @db.VarChar(64)
-    createdAt DateTime @db.Timestamptz(6)
-    updatedAt DateTime @db.Timestamptz(6)
-
-    player   Player @relation(fields: [playerId], references: [id])
-    playerId String @db.Uuid
-
-    tiles Tile[]
-}
-
+//! master Graph
 model Tile {
-    id        String   @id @db.Uuid
-    name      String   @db.VarChar(64)
-    createdAt DateTime @db.Timestamptz(6)
-    updatedAt DateTime @db.Timestamptz(6)
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-    field   Field  @relation(fields: [fieldId], references: [id])
-    fieldId String @db.Uuid
+    location    String       @id @unique @default("0,0")
+    connectedTo String[]     @default([])
+    playerTiles PlayerTile[]
 }
+
+//!
+
+//! gamedata
+model Player {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+    addedById String   @db.Uuid
+
+    about     String @default("Я играю в футбол")
+    name      String @db.VarChar(64)
+    fieldRoot String @db.Uuid
+
+    imageId String?
+    userId  String  @unique
+    image   Image?  @relation(fields: [imageId], references: [key])
+    user    User    @relation(fields: [userId], references: [id])
+
+    playerTiles    PlayerTile[]
+    playerContents PlayerContent[]
+    coops          Coop[]
+    coopInvites    CoopInvite[]
+}
+
+model PlayerTile {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    type            PlayerTileType
+    hardConnectedTo String[]       @default([])
+
+    playerId       String          @db.Uuid
+    tileId         String
+    player         Player          @relation(fields: [playerId], references: [id])
+    tile           Tile            @relation(fields: [tileId], references: [location])
+    playerContents PlayerContent[]
+}
+
+enum PlayerTileType {
+    start
+    border
+    field
+}
+
+model PlayerContent {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    source PlayerContentSource
+    status PlayerContentStatus
+
+    playerId     String      @db.Uuid
+    contentId    String      @db.Uuid
+    playerTileId String?     @db.Uuid
+    coopId       String?     @db.Uuid
+    player       Player      @relation(fields: [playerId], references: [id])
+    content      Content     @relation(fields: [contentId], references: [id])
+    playerTile   PlayerTile? @relation(fields: [playerTileId], references: [id])
+    coop         Coop?       @relation(fields: [coopId], references: [id])
+}
+
+enum PlayerContentSource {
+    field
+    invite
+}
+
+enum PlayerContentStatus {
+    inProgress
+    completed
+    dropped
+}
+
+model Coop {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    ownerId             String          @db.Uuid
+    contentId           String          @db.Uuid
+    content             Content         @relation(fields: [contentId], references: [id])
+    owner               Player          @relation(fields: [ownerId], references: [id])
+    coopInvites         CoopInvite[]
+    childPlayerContents PlayerContent[]
+}
+
+model CoopInvite {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    coopId     String @db.Uuid
+    receiverId String @db.Uuid
+    coop       Coop   @relation(fields: [coopId], references: [id])
+    receiver   Player @relation(fields: [receiverId], references: [id])
+}
+
+//!
 
 model Image {
     key       String   @id
-    createdAt DateTime @db.Timestamptz(6)
-    updatedAt DateTime @db.Timestamptz(6)
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
     name String
     url  String
     size Int
 
-    addedBy   User   @relation(fields: [addedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    addedBy   User     @relation(fields: [addedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
     addedById String
+    players   Player[]
 }
 
 model Content {
-    id             String  @id @db.Uuid
-    addedById      String  @db.Uuid
-    ownedById      String  @db.Uuid
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+    addedById String   @db.Uuid
+    ownedById String   @db.Uuid
+
     label          String  @default("Название") @db.VarChar(16)
     title          String  @default("Длинное название") @db.VarChar(128)
     altColor       String  @default("#2b2744") @db.VarChar(10)
@@ -132,7 +210,8 @@ model Content {
     maxCoopPlayers Int     @default(1)
     hasDifficulty  Boolean @default(false)
 
-    createdAt    DateTime @db.Timestamptz(6)
-    updatedAt    DateTime @db.Timestamptz(6)
-    endCondition String   @default("")
+    endCondition String @default("")
+
+    playerContents PlayerContent[]
+    coops          Coop[]
 }

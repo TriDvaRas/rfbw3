@@ -73,20 +73,5 @@ export function getMazeNodes(rootX: number, rootY: number, depth: number): MazeN
     return nodes
 }
 
-// export function getMazeTiles(_x: number, _y: number, r: number): MazeEdge[] {
-//     const edges: MazeEdge[] = []
-//     // console.log("getMazeTiles", mazeGraph)
-//     console.log("getMazeTiles", edges.length)
-//     for (let x = _x - r; x <= _x + r; x++) {
-//         for (let y = _y - r * 1.5; y <= _y + r * 1.5; y++) {
-//             if (mazeGraph.has(`${x},${y}`)) {
-//                 edges.push(...mazeGraph.get(`${x},${y}`)!)
-//             }
-//         }
-//     }
-//     console.log("getMazeTiles", edges.length)
-//     return _.uniqBy(edges, (x => x.from.join(',') + x.to.join(','))).map((edge) => ({
-//         from: [(edge.from[0] - _x) * 1.5, (edge.from[1] - _y) * SQRT3 / 2],
-//         to: [(edge.to[0] - _x) * 1.5, (edge.to[1] - _y) * SQRT3 / 2],
-//     }))
-// }
+
+
