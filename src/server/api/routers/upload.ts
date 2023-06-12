@@ -9,6 +9,7 @@ import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { env } from "../../../env.mjs";
 import { TRPCError } from "@trpc/server";
 import { uuid } from "uuidv4";
+import { prisma } from "../../db";
 
 const s3 = new S3({
   region: env.S3_REGION,
@@ -38,12 +39,31 @@ export const uploadRouter = createTRPCRouter({
         ],
         Expires: 60, // link expiration time in seconds
       });
-      
+      prisma.image.create({
+        data: {
+          addedById: ctx.session.user.id,
+          url: `https://${env.S3_BUCKET}.s3.${env.S3_REGION}.amazonaws.com/${Key}`,
+        }
+      });
       return { url, fields, Key }
     } catch (err) {
       console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Error creating pre-signed URL' });
     }
+  }),
+  setUploadStatus: protectedProcedure.input(z.object({
+    url: z.string().url(),
+    status: z.enum(['UPLOADED', 'FAILED']),
+  })).mutation(async ({ ctx, input }) => {
+    return await prisma.image.updateMany({
+      where: {
+        url: input.url,
+        addedById: ctx.session.user.id,
+      },
+      data: {
+        uploadStatus: input.status,
+      }
+    });
   }),
 
 });

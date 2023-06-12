@@ -13,6 +13,7 @@ export const useFileUpload = ({ onSuccess, onError }: UploadHookOptions = {}) =>
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [file, setFile] = useState<File>(null!);
+    const { mutate: setUploadStatus } = api.upload.setUploadStatus.useMutation()
     const { mutate, } = api.upload.createPresignedPost.useMutation({
         onError() {
             setIsUploading(false);
@@ -42,10 +43,13 @@ export const useFileUpload = ({ onSuccess, onError }: UploadHookOptions = {}) =>
             if (response.status < 400) {
                 setIsUploading(false);
                 setProgress(1);
+                setUploadStatus({ status: 'UPLOADED', url: `${url}${Key}` })
                 onSuccess && onSuccess(`${url}${Key}`);
+
             } else {
                 setIsUploading(false);
                 setError('Failed to upload file');
+                setUploadStatus({ status: 'FAILED', url: `${url}${Key}` })
                 onError && onError('Failed to upload file');
             }
         }
