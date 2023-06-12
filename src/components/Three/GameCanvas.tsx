@@ -70,7 +70,7 @@ const GameCanvas = () => {
         <WaterPlane />
         <axesHelper scale={5} position={[0, 1.1, 0]} />
         {/* <Grid infiniteGrid /> */}
-        <Stats />
+        {/* <Stats  /> */}
       </Canvas>
       <Loader />
     </div >

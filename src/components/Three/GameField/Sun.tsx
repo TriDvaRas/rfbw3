@@ -25,7 +25,7 @@ const Sun: React.FC = () => {
     const lightRef = useRef<THREE.PointLight>(null!);
     const sunRef = useRef<THREE.Mesh>(null!);
     const skyRef = useRef<any>(null!);
-    const { t } = useControls({ t: { value: 0, min: 0, max: 1, step: 0.01 } })
+    const { t } = useControls({ t: { value: 0.07, min: 0, max: 1, step: 0.01 } })
     useFrame(({ clock }) => {
         // const t = clock.getElapsedTime() / 3;
         const radius = SUN_DISTANCE;

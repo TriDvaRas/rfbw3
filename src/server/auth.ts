@@ -1,4 +1,5 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { UserRole } from "@prisma/client";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
@@ -18,10 +19,11 @@ import { prisma } from "~/server/db";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
+      image: string | null;
       id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+      name: string;
+      roles: UserRole[];
+    }
   }
 
   // interface User {
@@ -37,12 +39,17 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
+    session: async ({ session, user }) => ({
       ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
+      user: await prisma.user.findUniqueOrThrow({
+        where: { id: user.id },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          roles: true,
+        }
+      }),
     }),
   },
   adapter: PrismaAdapter(prisma),

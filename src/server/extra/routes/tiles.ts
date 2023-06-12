@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { getMazeNodes } from "../lib/graph";
+import { getMazeNodes } from "../util/graph";
 
 const router = Router();
 

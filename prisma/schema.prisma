@@ -49,15 +49,24 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    player        Player[]
-    images        Image[]
+    id                 String     @id @default(cuid())
+    name               String
+    email              String?    @unique
+    emailVerified      DateTime?
+    image              String?
+    canBecomePlayer    Boolean    @default(false)
+    roles              UserRole[] @default([USER])
+    applicationComment String?
+
+    accounts Account[]
+    sessions Session[]
+    player   Player[]
+    images   Image[]
+}
+
+enum UserRole {
+    ADMIN
+    USER
 }
 
 model VerificationToken {
@@ -89,12 +98,12 @@ model Player {
 
     about     String @default("Я играю в футбол")
     name      String @db.VarChar(64)
-    fieldRoot String @db.Uuid
+    fieldRoot String
 
-    imageId String?
-    userId  String  @unique
-    image   Image?  @relation(fields: [imageId], references: [key])
-    user    User    @relation(fields: [userId], references: [id])
+    imageUrl String? 
+    userId   String  @unique
+    image    Image?  @relation(fields: [imageUrl], references: [url])
+    user     User    @relation(fields: [userId], references: [id])
 
     playerTiles    PlayerTile[]
     playerContents PlayerContent[]
@@ -179,13 +188,8 @@ model CoopInvite {
 //!
 
 model Image {
-    key       String   @id
+    url       String   @id @unique
     createdAt DateTime @default(now()) @db.Timestamptz(6)
-    updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-    name String
-    url  String
-    size Int
 
     addedBy   User     @relation(fields: [addedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
     addedById String

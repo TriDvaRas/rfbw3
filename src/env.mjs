@@ -24,6 +24,11 @@ export const env = createEnv({
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     DISCORD_CLIENT_ID: z.string(),
     DISCORD_CLIENT_SECRET: z.string(),
+    // uploadthing
+    S3_BUCKET: z.string(),
+    S3_REGION: z.string(),
+    S3_SECRET_KEY: z.string(),
+    S3_ACCESS_KEY: z.string(),
   },
 
   /**
@@ -47,6 +52,10 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+    S3_BUCKET: process.env.S3_BUCKET,
+    S3_REGION: process.env.S3_REGION,
+    S3_SECRET_KEY: process.env.S3_SECRET_KEY,
+    S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

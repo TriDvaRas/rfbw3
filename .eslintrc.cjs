@@ -17,6 +17,9 @@ const config = {
         "@typescript-eslint/consistent-type-imports": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/no-misused-promises": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-floating-promises": "off",
       }
     },
     {

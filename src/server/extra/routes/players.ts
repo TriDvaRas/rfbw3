@@ -15,7 +15,7 @@ router.post("/create", (req, res) => {
     const body = createPlayerRequestBody.parse(req.body);
     prisma.player.create({
         data: {
-            addedById: req.session.userId,
+            addedById: req.session.user.id,
             fieldRoot: body.fieldRoot,
             name: body.name,
             userId: body.userId,
