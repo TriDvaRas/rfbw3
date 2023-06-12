@@ -1,14 +1,13 @@
+import { S3 } from "@aws-sdk/client-s3";
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+import { TRPCError } from "@trpc/server";
+import { uuid } from "uuidv4";
 import { z } from "zod";
 import {
   createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
+  protectedProcedure
 } from "~/server/api/trpc";
-import { S3 } from "@aws-sdk/client-s3";
-import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { env } from "../../../env.mjs";
-import { TRPCError } from "@trpc/server";
-import { uuid } from "uuidv4";
 import { prisma } from "../../db";
 
 const s3 = new S3({
