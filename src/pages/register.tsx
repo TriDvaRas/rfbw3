@@ -6,6 +6,7 @@ import { Avatar, Button, FileInput, Form, Hero, Input, InputGroup, Steps, Textar
 import { BsDiscord } from 'react-icons/bs';
 import { ImExit } from "react-icons/im";
 import { api } from "../utils/api";
+import { useFileUpload } from "../hooks/useFileUpload";
 
 const GameField: NextPage = () => {
   const utils = api.useContext()
@@ -34,17 +35,13 @@ const GameField: NextPage = () => {
   })
 
 
-  //
-  // const { startUpload, isUploading } = useUploadThing({
-  //   endpoint: 'imageUploader',
-  //   onClientUploadComplete: () => {
-  //     alert("uploaded successfully!");
-  //   },
-  //   onUploadError: () => {
-  //     alert("error occurred while uploading");
-  //   },
-  // })
-  //
+
+  const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
+    onSuccess(url) {
+      setLocalImageSource(url)
+    }
+  })
+
 
   const [applicationMesage, setApplicationMesage] = useState<string>('')
   const [localImageSource, setLocalImageSource] = useState<string | undefined>(undefined)
@@ -137,21 +134,15 @@ const GameField: NextPage = () => {
                 <Form className="">
                   {/* profile image */}
                   <Form.Label title="Аватар" />
-                  <FileInput 
-                  // disabled={isMyPlayerLoading || isUploading} 
-                  bordered onChange={(e) => {
-                    e.preventDefault()
-                    const file = (e.currentTarget.files ?? [])[0]
-                    if (file) {
-                      // startUpload([file]).then((res) => {
-                      //   console.log(res);
-                      //   setLocalImageSource((res ?? [])[0]?.fileUrl)
-                      // }
-                      // ).catch((err) => {
-                      //   console.log(err);
-                      // })
-                    }
-                  }} />
+                  <FileInput
+                    disabled={isMyPlayerLoading || isUploading}
+                    bordered onChange={(e) => {
+                      e.preventDefault()
+                      const file = (e.currentTarget.files ?? [])[0]
+                      if (file) {
+                        startUpload(file)
+                      }
+                    }} />
                   {/* Player name */}
                   <Form.Label title="Имя" />
                   <Input placeholder="Имя" value={localPlayerName} onInput={(e) => setLocalPlayerName(e.currentTarget.value)} />
@@ -159,7 +150,7 @@ const GameField: NextPage = () => {
                   <Form.Label title="Девиз" />
                   <Textarea placeholder="" className="resize-none h-24 rounded-scollable" value={localPlayerDescription} onInput={(e) => setLocalPlayerDescription(e.currentTarget.value)} />
                   <Form.Label ><span className="label-text-alt text-slate-500">Желательно что то короткое и пафосное</span></Form.Label>
-                  <Button color="primary" loading={isMyPlayerLoading} disabled={isMyPlayerLoading || localPlayerName.length == 0 || localPlayerDescription.length == 0}>Сохранить</Button>
+                  <Button color="primary" loading={isMyPlayerLoading} disabled={isMyPlayerLoading || isUploading || localPlayerName.length == 0 || localPlayerDescription.length == 0}>Сохранить</Button>
                 </Form>
 
               </div>
