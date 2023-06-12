@@ -126,12 +126,18 @@ const GameField: NextPage = () => {
                 <h1 className="text-5xl font-bold">Регистрация</h1>
                 <h3 className="text-2xl font-bold mt-1 mb-5">Создание профиля игрока</h3>
                 {/* <p className="py-6 -mt-1">Хуй.</p> */}
-                {localImageSource ?
-                  <Avatar size={256} shape={'circle'} letters={(localPlayerName || me.name).split('').filter(x => /[А-ЯA-Z]/.test(x)).filter((_, i, a) => i == 0 || i == a.length - 1).join('')} src={localImageSource} /> :
-                  <Avatar size={256} shape={'circle'} letters={(localPlayerName || me.name).split('').filter(x => /[А-ЯA-Z]/.test(x)).filter((_, i, a) => i == 0 || i == a.length - 1).join('')} className="text-7xl" />}
+                <Avatar size={256} shape={'circle'} letters={(localPlayerName || me.name).split('').filter(x => /[А-ЯA-Z]/.test(x)).filter((_, i, a) => i == 0 || i == a.length - 1).join('')} src={localImageSource} className="text-7xl" />
                 <h3 className="text-3xl font-bold mt-2 mb-0">{localPlayerName || me.name}</h3>
                 <h5 className="text-lg font-thin mt-0 mb-5">{localPlayerDescription}</h5>
-                <Form className="">
+                <Form className="" onSubmit={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  mutateMyPlayer({
+                    motto: localPlayerDescription,
+                    imageUrl: localImageSource,
+                    name: localPlayerName,
+                  })
+                }}>
                   {/* profile image */}
                   <Form.Label title="Аватар" />
                   <FileInput
@@ -150,7 +156,7 @@ const GameField: NextPage = () => {
                   <Form.Label title="Девиз" />
                   <Textarea placeholder="" className="resize-none h-24 rounded-scollable" value={localPlayerDescription} onInput={(e) => setLocalPlayerDescription(e.currentTarget.value)} />
                   <Form.Label ><span className="label-text-alt text-slate-500">Желательно что то короткое и пафосное</span></Form.Label>
-                  <Button color="primary" loading={isMyPlayerLoading} disabled={isMyPlayerLoading || isUploading || localPlayerName.length == 0 || localPlayerDescription.length == 0}>Сохранить</Button>
+                  <Button color="primary" loading={isMyPlayerLoading} disabled={isMyPlayerLoading || isUploading || localPlayerName.length == 0}>Сохранить</Button>
                 </Form>
 
               </div>

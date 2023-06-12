@@ -38,7 +38,7 @@ export const uploadRouter = createTRPCRouter({
         ],
         Expires: 60, // link expiration time in seconds
       });
-      prisma.image.create({
+      await prisma.image.create({
         data: {
           addedById: ctx.session.user.id,
           url: `https://${env.S3_BUCKET}.s3.${env.S3_REGION}.amazonaws.com/${Key}`,

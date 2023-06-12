@@ -94,7 +94,7 @@ model Player {
     id        String   @id @default(uuid()) @db.Uuid
     createdAt DateTime @default(now()) @db.Timestamptz(6)
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
-    addedById String   @db.Uuid
+    addedById String
 
     about     String @default("Я играю в футбол")
     name      String @db.VarChar(64)
@@ -196,7 +196,8 @@ model Image {
     addedById String
     players   Player[]
 }
-enum UploadStatus{
+
+enum UploadStatus {
     PENDING
     UPLOADED
     FAILED
@@ -206,8 +207,8 @@ model Content {
     id        String   @id @default(uuid()) @db.Uuid
     createdAt DateTime @default(now()) @db.Timestamptz(6)
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
-    addedById String   @db.Uuid
-    ownedById String   @db.Uuid
+    addedById String
+    ownedById String
 
     label          String  @default("Название") @db.VarChar(16)
     title          String  @default("Длинное название") @db.VarChar(128)
