@@ -8,6 +8,11 @@ export default {
   theme: {
     extend: {},
   },
+  safelist:[
+    {
+      pattern: /(col|row)-span-.+/
+    },
+  ],
   daisyui: {
     themes: [
       {

@@ -21,6 +21,16 @@ const config = {
   experimental: {
     esmExternals: false, // THIS IS THE FLAG THAT MATTERS
   },
+  images: {
+    remotePatterns: [
+      { 
+        protocol: 'https',
+        hostname: 'tdr-starlight-my-ass-98.s3.eu-central-1.amazonaws.com',
+        port: '',
+        pathname: '/rfbw/**',
+      }
+    ]
+  },
   async rewrites() {
     return [
       {

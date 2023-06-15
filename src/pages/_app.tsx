@@ -25,7 +25,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       `}</style>
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
-          <Theme dataTheme="rfbw">
+          <Theme dataTheme="rfbw" className="bg-gradient-to-b from-slate-800 to-black">
             <Component {...pageProps} />
           </Theme>
         </QueryClientProvider>

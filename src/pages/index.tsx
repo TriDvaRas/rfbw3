@@ -1,10 +1,14 @@
 import { type NextPage } from "next";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { Hero } from "react-daisyui";
 const Home: NextPage = () => {
-
+  const { status } = useSession()
+  const router = useRouter()
+  if (status === 'authenticated')
+    router.push('/home')
   return (
     <>
       <Head>
@@ -13,26 +17,28 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center ">
-        <Hero>
-          <Hero.Content className="text-center">
-            <div className="max-w-md">
-              <h1 className="text-5xl font-bold">Доброго Дня RFBW-шникам</h1>
-              <p className="py-6">Остальным соболезную. Вы когда то слышали про <b>RFBW</b>? Лично я нет. Но теперь не забудьте услышать!</p>
-              <div className="flex flex-row justify-center">
-                {/* <button className="btn btn-primary btn-md bg-[#5865F2]  border-[#5865F2] hover:border-[#3b44ae]/90 hover:bg-[#3b44ae]/90 text-white">
+        {
+          status === 'unauthenticated' && <Hero>
+            <Hero.Content className="text-center">
+              <div className="max-w-md">
+                <h1 className="text-5xl font-bold">Доброго Дня RFBW-шникам</h1>
+                <p className="py-6">Остальным соболезную. Вы когда то слышали про <b>RFBW</b>? Лично я нет. Но теперь не забудьте услышать!</p>
+                <div className="flex flex-row justify-center">
+                  {/* <button className="btn btn-primary btn-md bg-[#5865F2]  border-[#5865F2] hover:border-[#3b44ae]/90 hover:bg-[#3b44ae]/90 text-white">
                    <BsDiscord className="me-1 text-xl" /> 
                   Я уже смешарик
                 </button> */}
 
-                <button onClick={() => signIn('discord')} className="btn btn-accent btn-md ms-2">Я уже смешарик</button>
-                <Link href={'/register'}>
-                  <button className="btn btn-secondary btn-md ms-2">Регистрация</button>
-                </Link>
-              </div>
+                  <button onClick={() => signIn('discord')} className="btn btn-accent btn-md ms-2">Я уже смешарик</button>
+                  <Link href={'/register'}>
+                    <button className="btn btn-secondary btn-md ms-2">Регистрация</button>
+                  </Link>
+                </div>
 
-            </div>
-          </Hero.Content>
-        </Hero>
+              </div>
+            </Hero.Content>
+          </Hero>
+        }
       </main >
     </>
   );

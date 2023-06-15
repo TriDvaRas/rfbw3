@@ -2,11 +2,14 @@ import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
-import { Avatar, Button, FileInput, Form, Hero, Input, InputGroup, Steps, Textarea } from 'react-daisyui';
+import { Button, FileInput, Form, Hero, Input, InputGroup, Steps, Textarea } from 'react-daisyui';
 import { BsDiscord } from 'react-icons/bs';
 import { ImExit } from "react-icons/im";
 import { api } from "../utils/api";
 import { useFileUpload } from "../hooks/useFileUpload";
+import Avatar from "../components/util/Avatar";
+import { getNameInitials } from "../utils/text";
+import Link from "next/link";
 
 const GameField: NextPage = () => {
   const utils = api.useContext()
@@ -58,12 +61,12 @@ const GameField: NextPage = () => {
         <title>RFBW - Регистрация</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Button className="absolute m-3 right-0 btn-md " shape="circle" onClick={() => signOut()}><ImExit className="-me-1" /></Button>
+      {sessionStatus == 'authenticated' && <Button className="absolute m-3 right-0 btn-md " shape="circle" onClick={() => signOut()}><ImExit className="-me-1" /></Button>}
       <main className="flex min-h-screen flex-col items-center justify-start ">
 
         <Steps className="mt-3 -mb-9">
           <Steps.Step color="primary">Создание Аккаунта</Steps.Step>
-          <Steps.Step color={me ? 'primary' : 'neutral'}>Подача Заявка</Steps.Step>
+          <Steps.Step color={me ? 'primary' : 'neutral'}>Подача Заявки</Steps.Step>
           <Steps.Step color={me?.canBecomePlayer ? 'primary' : 'neutral'}>Создание Профиля</Steps.Step>
           <Steps.Step color={player ? 'primary' : 'neutral'}>Смерть</Steps.Step>
         </Steps>
@@ -126,7 +129,7 @@ const GameField: NextPage = () => {
                 <h1 className="text-5xl font-bold">Регистрация</h1>
                 <h3 className="text-2xl font-bold mt-1 mb-5">Создание профиля игрока</h3>
                 {/* <p className="py-6 -mt-1">Хуй.</p> */}
-                <Avatar size={256} shape={'circle'} letters={(localPlayerName || me.name).split('').filter(x => /[А-ЯA-Z]/.test(x)).filter((_, i, a) => i == 0 || i == a.length - 1).join('')} src={localImageSource} className="text-7xl" />
+                <Avatar width={256} height={256} shape={'circle'} letters={getNameInitials(localPlayerName || me.name)} src={localImageSource} className="text-7xl" />
                 <h3 className="text-3xl font-bold mt-2 mb-0">{localPlayerName || me.name}</h3>
                 <h5 className="text-lg font-thin mt-0 mb-5">{localPlayerDescription}</h5>
                 <Form className="" onSubmit={(e) => {
@@ -161,6 +164,52 @@ const GameField: NextPage = () => {
 
               </div>
             }
+            {/*//! STEP 4 */}
+            {sessionStatus == 'authenticated' && player && <div className="max-w-md">
+              <Avatar width={256} height={256} shape={'circle'} letters={getNameInitials(player.name)} src={player.imageUrl} className="text-7xl" />
+              <h3 className="text-3xl font-bold mt-2 mb-0">{player.name}</h3>
+              <h5 className="text-lg font-thin mt-0 mb-5">{player.about}</h5>
+              <h3 className="text-2xl font-bold mt-1 mb-5">Добро пожаловать :)</h3>
+              <Link href={'/home'}>
+                <Button className="h-32 w-32 relative" shape="circle" color="error">
+                  <div style={{
+                    width: '0',
+                    height: '0',
+                    borderBottom: '28px solid lime',
+                    borderLeft: '18px solid transparent',
+                    borderRight: '0px solid transparent',
+                    position: 'absolute',
+                    top: '-20px',
+                    left: 'calc(50% - 5px)',
+                    transform: 'rotate(38deg)',
+                  }}></div>
+
+                  <div style={{
+                    width: '0',
+                    height: '0',
+                    borderBottom: '17px solid lime',
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    position: 'absolute',
+                    top: '-20px',
+                    left: 'calc(50% - 6px)',
+                    transform: 'rotate(-7deg)',
+                  }}></div>
+                                    <div style={{
+                    width: '0',
+                    height: '0',
+                    borderBottom: '28px solid lime',
+                    borderLeft: '0px solid transparent',
+                    borderRight: '17.5px solid transparent',
+                    position: 'absolute',
+                    top: '-20px',
+                    left: 'calc(50% - 14px)',
+                    transform: 'rotate(-32deg)',
+                  }}></div>
+                  <h1 className="text-7xl pt-1" title="舞台少女の死">死</h1>
+                </Button>
+              </Link>
+            </div>}
           </Hero.Content>
         </Hero>
       </main>
