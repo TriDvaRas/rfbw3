@@ -34,13 +34,13 @@ const GameField: NextPage = () => {
         <h1 style={{ fontFamily: shrikhand.style.fontFamily }} className={` text-lime-100 flex flex-col items-center justify-center text-2xl mb-8 pe-2`}>Rice Fields Bizarre Wandering</h1>
         {
           status === 'authenticated' && <div className="grid grid-cols-3 grid-rows-4 gap-4 grid-flow-col w-[46rem] h-[15rem] ">
-            <HomeButton w={1} h={4} href="/game">
+            <HomeButton w={1} h={4} href="/game" className="under-construction border-cyan-700 hover:border-cyan-700" disabled>
               <div className="flex flex-col items-center justify-center gap-1">
                 <GiIsland className="text-6xl" />
                 <div className="text-2xl">Начать <br />Gaming</div>
               </div>
             </HomeButton>
-            <HomeButton w={1} h={4} href="/editor" className={`border-cyan-500 hover:border-cyan-500`}>
+            <HomeButton w={1} h={4} href="/editor" className={``}>
               <div className="flex flex-col items-center justify-center gap-1">
                 <CiViewList className="text-6xl" />
                 <div className="text-2xl mt-1">Редактор <br />Контента</div>
@@ -57,12 +57,12 @@ const GameField: NextPage = () => {
   );
 };
 //DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
-const HomeButton: React.FC<React.PropsWithChildren<{ w?: number, h?: number, href?: string, onClick?: () => void, className?: string }>> = (props) => {
-  const { children, w = 1, h = 1, href, onClick, className } = props;
-  const but = <Button onClick={onClick} className={`min-h-full text-lime-100 min-w-full row-span-${h} col-span-${w} border-4 border-cyan-500 hover:border-cyan-500 rounded-3xl  bg-teal-800 hover:bg-cyan-700 bg-opacity-0 hover:bg-opacity-100 flex items-center justify-center ${className ?? ''}`}>
+const HomeButton: React.FC<React.PropsWithChildren<{ w?: number, h?: number, href?: string, onClick?: () => void, className?: string, disabled?: boolean }>> = (props) => {
+  const { children, w = 1, h = 1, href, onClick, className, disabled } = props;
+  const but = <Button disabled={disabled} onClick={onClick} className={`min-h-full text-lime-100 min-w-full row-span-${h} col-span-${w} border-4 border-cyan-500 hover:border-cyan-500 rounded-3xl  bg-teal-800 hover:bg-cyan-700 bg-opacity-0 hover:bg-opacity-100 flex items-center justify-center ${className ?? ''}`}>
     {children}
   </Button>
-  if (href)
+  if (href && !disabled)
     return <Link href={href} className={`row-span-${h} col-span-${w}`}>{but}</Link>
   return but
 }
