@@ -109,7 +109,18 @@ export const publicProcedure = t.procedure;
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Кто?" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+const enforceUserIsPlayer = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user || !(await prisma.player.findUnique({ where: { userId: ctx.session.user.id } }))) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Пошел нахуй." });
   }
   return next({
     ctx: {
@@ -120,7 +131,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 });
 const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user || !ctx.session.user.roles.includes("ADMIN")) {
-    throw new TRPCError({ code: "FORBIDDEN" });
+    throw new TRPCError({ code: "FORBIDDEN", message: "Пошел Нахуй. Прям совсем." });
   }
   return next({
     ctx: {
@@ -139,4 +150,5 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
-export const adminProtectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const playerProtectedProcedure = t.procedure.use(enforceUserIsPlayer);
+export const adminProtectedProcedure = t.procedure.use(enforceUserIsAdmin);

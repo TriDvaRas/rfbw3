@@ -192,7 +192,7 @@ model Image {
     createdAt    DateTime     @default(now()) @db.Timestamptz(6)
     uploadStatus UploadStatus @default(PENDING)
 
-    addedBy   User     @relation(fields: [addedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    addedBy   User     @relation(fields: [addedById], references: [id], onDelete: Cascade, onUpdate: NoAction)
     addedById String
     players   Player[]
 }
@@ -210,19 +210,91 @@ model Content {
     addedById String
     ownedById String
 
-    label          String  @default("Название") @db.VarChar(16)
-    title          String  @default("Длинное название") @db.VarChar(128)
-    altColor       String  @default("#2b2744") @db.VarChar(10)
-    fontColor      String  @default("#ffffff") @db.VarChar(10)
-    hours          Decimal @default(0) @db.Decimal(3, 1)
-    deleted        Boolean @default(false)
-    imageId        String?
-    hasCoop        Boolean @default(false)
-    maxCoopPlayers Int     @default(1)
-    hasDifficulty  Boolean @default(false)
+    label          String         @db.VarChar(16)
+    title          String         @db.VarChar(128)
+    hours          Decimal        @db.Decimal(3, 1)
+    deleted        Boolean        @default(false)
+    imageId        String
+    hasCoop        Boolean        @default(false)
+    maxCoopPlayers Int            @default(1)
+    genres         ContentGenre[] @default([])
 
-    endCondition String @default("")
+    approved     Boolean @default(false)
+    fixRequested Boolean @default(false)
+    fixReason    String  @default("")
+    comments     String  @default("")
+    endCondition String  @default("")
 
     playerContents PlayerContent[]
     coops          Coop[]
+    DLCs           ContentDLC[]
+}
+
+model ContentDLC {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    hours        Decimal @default(0) @db.Decimal(3, 1)
+    label        String  @default("Название") @db.VarChar(16)
+    title        String  @default("Длинное название") @db.VarChar(128)
+    endCondition String  @default("")
+    position     Int     @default(0)
+
+    contentId String  @db.Uuid
+    content   Content @relation(fields: [contentId], references: [id])
+}
+
+enum ContentGenre {
+    action
+    adventure
+    cars
+    comedy
+    crime
+    documentary
+    drama
+    ecchi
+    family
+    fantasy
+    fighting
+    game
+    harem
+    historical
+    history
+    horror
+    kids
+    magic
+    mecha
+    military
+    music
+    mystery
+    parody
+    platform
+    police
+    psychological
+    puzzle
+    quiz_trivia
+    racing
+    romance
+    rpg
+    school
+    sci_fi
+    science_fiction
+    shooter
+    simulator
+    slasher
+    slice_of_life
+    space
+    sport
+    sports
+    strategy
+    super_power
+    supernatural
+    thriller
+    turn_based
+    vampire
+    war
+    western
+    yaoi
+    yuri
 }

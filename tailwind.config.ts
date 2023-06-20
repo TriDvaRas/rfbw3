@@ -12,6 +12,12 @@ export default {
     {
       pattern: /(col|row)-span-.+/
     },
+    {
+      pattern: /.+-slate-.+/
+    },
+    {
+      pattern: /grow/
+    },
   ],
   daisyui: {
     themes: [

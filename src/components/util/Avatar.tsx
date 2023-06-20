@@ -26,6 +26,7 @@ export type AvatarProps = React.HTMLAttributes<HTMLDivElement> &
     online?: boolean
     offline?: boolean
     children?: React.ReactNode
+    imageClassName?: string
   }
 export const isSingleStringChild = (children?: React.ReactNode) => {
   return (
@@ -52,6 +53,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     dataTheme,
     className,
     children,
+    imageClassName,
     ...props
   }, ref): JSX.Element {
     const containerClasses = twMerge(
@@ -124,8 +126,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       // Base case, if src is provided, render img
       if (src) {
         return (
-          <div className={imgClasses} style={customImgDimension}>
-            <Image src={src} alt={''} width={width} height={height} />
+          <div className={`${imgClasses} ${imageClassName}`} style={customImgDimension}>
+            <Image quality={100} src={src} alt={''} width={width} height={height} />
           </div>
         )
       }
