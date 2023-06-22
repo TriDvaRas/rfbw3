@@ -34,15 +34,15 @@ export const useFileUpload = ({ onSuccess, onError }: UploadHookOptions = {}) =>
                 headers: {
                     Accept: "application/xml",
                 },
-                // onUploadProgress: (progressEvent) => {
-                //     const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? Infinity));
-                //     setProgress(percentCompleted);
-                // },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? Infinity));
+                    setProgress(percentCompleted);
+                },
             });
 
             if (response.status < 400) {
                 setIsUploading(false);
-                setProgress(1);
+                setProgress(100);
                 setUploadStatus({ status: 'UPLOADED', url: `${url}${Key}` })
                 onSuccess && onSuccess(`${url}${Key}`);
 

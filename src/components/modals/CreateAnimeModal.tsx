@@ -19,47 +19,44 @@ import Avatar from "../util/Avatar";
 import { z } from 'zod';
 import { toast } from 'react-toastify';
 
-export const gameDLCSchema = z.object({
+export const animeDLCSchema = z.object({
   hours: z.coerce.number().min(0.1, { message: ':)' }).max(10, { message: 'До 10 часов' }),
   label: z.string().min(1, { message: 'А где)' }).max(16, { message: 'Максимальная длина 16 символов' }),
   title: z.string().min(1, { message: 'Заполни)' }),
-  endCondition: z.string().min(1, { message: 'Условие завершения не может быть пустым' }),
   position: z.number().min(0),
 })
-export const gameFormSchema = z.object({
+export const animeFormSchema = z.object({
   label: z.string().min(1, { message: 'А где)' }).max(16, { message: 'Максимальная длина 16 символов' }),
   fullname: z.string().min(1, { message: 'Заполни)' }),
   hours: z.coerce.number().min(0.1, { message: ':)' }).max(98, { message: 'До 98 часов)' }),
-  maxPlayers: z.coerce.number().min(1, { message: 'Как?)' }).max(48, { message: 'Сколько?)' }),
-  endCondition: z.string().min(1, { message: 'Условие завершения не может быть пустым' }),
   imageURL: z.string().min(1, { message: 'Картинка обязательна' }),
   genres: z.enum(genreIds).array().min(1, { message: 'Выбери хотя бы один жанр' }).max(3, { message: 'Как?' }),
   comments: z.string().optional(),
-  dlcs: gameDLCSchema.array()
+  dlcs: animeDLCSchema.array()
 })
-export type GameFormSchema = z.infer<typeof gameFormSchema>
-export type GameDLCSchema = z.infer<typeof gameDLCSchema>
+export type AnimeFormSchema = z.infer<typeof animeFormSchema>
+export type AnimeDLCSchema = z.infer<typeof animeDLCSchema>
 
-const gameGenres = Array.from(genreIdToName.entries())
-const gameGenresOptions = _.orderBy(gameGenres.filter(x => globalConfig.genres.games.includes(x[1])).map(([id, name]) => ({ value: id, label: name })), 'id', 'asc')
+const animeGenres = Array.from(genreIdToName.entries())
+const animeGenresOptions = _.orderBy(animeGenres.filter(x => globalConfig.genres.anime.includes(x[1])).map(([id, name]) => ({ value: id, label: name })), 'id', 'asc')
 
 interface Props {
-  onSuccess: (data: GameFormSchema) => void
+  onSuccess: (data: AnimeFormSchema) => void
   onClose: () => void
   open: boolean
   closeOnBackdropClick?: boolean
-  defaultValues?: Partial<GameFormSchema>
+  defaultValues?: Partial<AnimeFormSchema>
 }
 
-const CreateGameModal: React.FC<Props> = (props) => {
+const CreateAnimeModal: React.FC<Props> = (props) => {
   const { status } = useSession()
   const [showValidationErrors, setShowValidationErrors] = useState(false)
   const { data: me } = api.players.getMyPlayer.useQuery()
   const [collapsedDlcs, setCollapsedDlcs] = useState<number[]>([])
 
-  const { mutate: createGameContentMutation, isLoading: isSaving } = api.content.createGameContent.useMutation({
+  const { mutate: createAnimeContentMutation, isLoading: isSaving } = api.content.createAnimeContent.useMutation({
     onSuccess() {
-      props.onSuccess(getGameValues())
+      props.onSuccess(getAnimeValues())
       resetForm()
     },
     onError(err) {
@@ -67,74 +64,71 @@ const CreateGameModal: React.FC<Props> = (props) => {
     }
   })
 
-  const methods = useForm<GameFormSchema>({
+  const methods = useForm<AnimeFormSchema>({
     defaultValues: {
       label: '',
       comments: '',
       fullname: '',
-      maxPlayers: 1,
-      endCondition: '',
       imageURL: undefined,
       genres: [],
       dlcs: [],
       hours: undefined,
       ...props.defaultValues,
     },
-    resolver: zodResolver(gameFormSchema),
+    resolver: zodResolver(animeFormSchema),
   });
   const {
-    register: registerGame,
-    handleSubmit: handleGameSubmit,
-    getValues: getGameValues,
-    setValue: setGameValue,
-    reset: resetGame,
-    watch: watchGame,
-    trigger: triggerGame,
+    register: registerAnime,
+    handleSubmit: handleAnimeSubmit,
+    getValues: getAnimeValues,
+    setValue: setAnimeValue,
+    reset: resetAnime,
+    watch: watchAnime,
+    trigger: triggerAnime,
     formState: { errors, isValid },
   } = methods
-  const gameData = watchGame()
-  const { endCondition, fullname, imageURL, label, maxPlayers, comments, genres, hours, dlcs } = gameData
+  const animeData = watchAnime()
+  const { fullname, imageURL, label, comments, genres, hours, dlcs } = animeData
 
   const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
     onSuccess(url) {
-      setGameValue('imageURL', url)
-      triggerGame('imageURL')
+      setAnimeValue('imageURL', url)
+      triggerAnime('imageURL')
     },
     onError(err) {
       toast.error(`Ошибка загрузки: ${err}`)
     }
   })
   function save() {
-    createGameContentMutation(getGameValues())
+    createAnimeContentMutation(getAnimeValues())
   }
-  function updateDLC(position: number, data: Partial<GameDLCSchema>) {
+  function updateDLC(position: number, data: Partial<AnimeDLCSchema>) {
     const newData = [...dlcs]
     newData[position] = {
       ...newData[position],
       ...data,
-    } as GameDLCSchema
-    setGameValue('dlcs', newData)
-    triggerGame('dlcs')
+    } as AnimeDLCSchema
+    setAnimeValue('dlcs', newData)
+    triggerAnime('dlcs')
   }
   function addDLC() {
     const newData = [...dlcs]
     newData.push({
-      endCondition: '',
       hours: undefined as unknown as number,
       label: '',
       position: dlcs.length,
       title: '',
     })
-    setGameValue('dlcs', newData)
-    triggerGame('dlcs')
+    setAnimeValue('dlcs', newData)
+    triggerAnime('dlcs')
   }
   function removeDlc(position: number) {
     const newData = [...dlcs]
     newData.splice(position, 1)
     setCollapsedDlcs(collapsedDlcs.filter(x => x !== position).map(x => x > position ? x - 1 : x))
     const resorted = newData.map((x, i) => ({ ...x, position: i }))
-    setGameValue('dlcs', resorted)
-    showValidationErrors && triggerGame('dlcs')
+    setAnimeValue('dlcs', resorted)
+    showValidationErrors && triggerAnime('dlcs')
   }
   function toggleDlc(position: number) {
     console.log('toggle', position);
@@ -145,7 +139,7 @@ const CreateGameModal: React.FC<Props> = (props) => {
     }
   }
   function resetForm() {
-    resetGame()
+    resetAnime()
     setCollapsedDlcs([])
     setShowValidationErrors(false)
   }
@@ -157,40 +151,31 @@ const CreateGameModal: React.FC<Props> = (props) => {
 
           {/* //! 1 */}
           <div className="w-1/3 max-h-full">
-            <Modal.Header className="mb-2">Добавление Новой Игры</Modal.Header>
+            <Modal.Header className="mb-2">Добавление Нового Аниме</Modal.Header>
             <Form onSubmit={(e) => { e.preventDefault(); }}>
               <div className="flex flex-row gap-2">
-                <div className="w-5/12 relative">
+                <div className="w-7/12 relative">
                   <Form.Label title="Название" />
-                  <Input  {...registerGame('label')} maxLength={16} className="w-full" color={errors.label ? 'error' : undefined} />
+                  <Input  {...registerAnime('label')} maxLength={16} className="w-full" color={errors.label ? 'error' : undefined} />
                   {errors.label && (
                     <span className=" label-text-alt text-error block mt-0.5 ms-3">
                       {errors.label.message}
                     </span>
                   )}
                 </div>
-                <div className="w-4/12">
+                <div className="w-5/12">
                   <Form.Label title="Длительность" className="mx-1" />
-                  <Input  {...registerGame('hours')} type='number' placeholder="(в часах)" min={0.1} step={0.1} max={98} className="w-full" color={errors.hours ? 'error' : undefined} />
+                  <Input  {...registerAnime('hours')} type='number' placeholder="(в часах)" min={0.1} step={0.1} max={98} className="w-full" color={errors.hours ? 'error' : undefined} />
                   {errors.hours && (
                     <span className=" label-text-alt text-error block mt-0.5">
                       {errors.hours.message}
                     </span>
                   )}
                 </div>
-                <div className="w-3/12">
-                  <Form.Label title="Игроки" className="mx-1" />
-                  <Input  {...registerGame('maxPlayers')} type='number' className="w-full" color={errors.maxPlayers ? 'error' : undefined} />
-                  {errors.maxPlayers && (
-                    <span className=" label-text-alt text-error block mt-0.5">
-                      {errors.maxPlayers.message}
-                    </span>
-                  )}
-                </div>
 
               </div>
               <Form.Label title="Полное Название" />
-              <Input  {...registerGame('fullname')} className="w-full" color={errors.fullname ? 'error' : undefined} />
+              <Input  {...registerAnime('fullname')} className="w-full" color={errors.fullname ? 'error' : undefined} />
               {errors.fullname && (
                 <span className=" label-text-alt text-error block mt-0.5 ms-3">
                   {errors.fullname.message}
@@ -237,13 +222,13 @@ const CreateGameModal: React.FC<Props> = (props) => {
                       isSearchable={false}
                       backspaceRemovesValue
                       value={(field.value || []).map(x => ({ value: x, label: genreIdToName.get(x)! }))}
-                      options={gameGenresOptions}
+                      options={animeGenresOptions}
                       menuPosition="absolute"
                       // menuIsOpen
                       menuPlacement="top"
                       onChange={val => {
-                        val.length > 3 || setGameValue('genres', val.map(x => x.value as GenreId))
-                        showValidationErrors && triggerGame('genres')
+                        val.length > 3 || setAnimeValue('genres', val.map(x => x.value as GenreId))
+                        showValidationErrors && triggerAnime('genres')
                       }}
                     />
                     {fieldState.error && (
@@ -254,16 +239,9 @@ const CreateGameModal: React.FC<Props> = (props) => {
                   </div>
                 )}
               />
-              <Form.Label title="Условие завершения" />
-              <Textarea className="resize-none h-32"  {...registerGame('endCondition')} color={errors.endCondition ? 'error' : undefined} />
-              {errors.endCondition && (
-                <span className=" label-text-alt text-error block mt-0.5 ms-3">
-                  {errors.endCondition.message}
-                </span>
-              )}
 
               <Form.Label title="Комментарии" />
-              <Textarea className="resize-none h-20"  {...registerGame('comments')} />
+              <Textarea className="resize-none h-32"  {...registerAnime('comments')} />
 
             </Form>
           </div>
@@ -272,7 +250,7 @@ const CreateGameModal: React.FC<Props> = (props) => {
           {/* //! 2 */}
           <div className="w-1/3 max-h-full">
             <Form className="h-full max-h-full" onSubmit={(e) => { e.preventDefault(); }}>
-              <Modal.Header className="mb-2">DLC (играбельные)</Modal.Header>
+              <Modal.Header className="mb-2">Дополнительные части/сезоны</Modal.Header>
               <div className="flex flex-col h-full  justify-center items-center">
 
                 {dlcs.length == 0 && <span className="label-text-alt text-slate-400 block ">Тут пока ничего нет...</span>}
@@ -319,11 +297,8 @@ const CreateGameModal: React.FC<Props> = (props) => {
                             </div>
                           </div>
                           <Form.Label title="Полное Название" className='py-1 w-full' />
-                          <Input size='sm' className="w-full" onChange={(e) => updateDLC(dlc.position, { title: e.target.value })}
+                          <Input size='sm' className="w-full mb-2" onChange={(e) => updateDLC(dlc.position, { title: e.target.value })}
                             color={showValidationErrors && errors.dlcs && errors.dlcs[i]?.title ? 'error' : undefined} value={dlc.title} />
-                          <Form.Label title="Условие Завершения" className='py-1 w-full' />
-                          <Input size='sm' className="w-full mb-2" onChange={(e) => updateDLC(dlc.position, { endCondition: e.target.value })}
-                            color={showValidationErrors && errors.dlcs && errors.dlcs[i]?.endCondition ? 'error' : undefined} value={dlc.endCondition} />
                         </Collapse.Content>
                       </div>
                     </Card>
@@ -332,7 +307,7 @@ const CreateGameModal: React.FC<Props> = (props) => {
                 <div className={`min-h-16  flex justify-center items-center ${dlcs.length == 0 ? '' : 'grow'}`}>
                   <Button color="ghost" className="w-100" onClick={(e) => {
                     e.preventDefault(); e.stopPropagation(); addDLC()
-                  }}>Добавить DLC 🪑</Button>
+                  }}>Добавить Часть 🪑</Button>
                 </div>
               </div>
             </Form>
@@ -343,20 +318,20 @@ const CreateGameModal: React.FC<Props> = (props) => {
           <div className="w-1/3 flex flex-col  items-center justify-center max-h-full">
             <div className="flex flex-col  items-center justify-center">
               <div className="w-[260px] h-[390px] relative mb-12 bg-slate-800 ">
-                <Image src={getGameValues().imageURL || '/errorAvatar.jpg'} layout="fill" alt="Ты не должен этого видеть. Перезалей картинку." width={300} height={450} className="object-cover rounded-lg" />
+                <Image src={getAnimeValues().imageURL || '/errorAvatar.jpg'} layout="fill" alt="Ты не должен этого видеть. Перезалей картинку." width={300} height={450} className="object-cover rounded-lg" />
                 {isUploading && <div className='absolute w-full h-full bg-slate-900 bg-opacity-80 flex justify-center items-center'><RadialProgress value={progress}>{progress}%</RadialProgress></div>}
                 {me && <Avatar height={40} width={40} src={me.imageUrl || '/errorAvatar.jpg'} className='absolute right-[-16px] top-[-16px]' shape='circle' />}
-                <div className={`absolute overflow-clip left-[-25px] bottom-[-30px] w-[310px] h-[80px] rounded-full bg-opacity-100 bg-green-600 px-1 py-1  flex text-center align-middle items-center justify-center text-slate-200 ${label.length > 7 ? label.length > 12 ? label.length > 15 ? `text-3xl` : `text-4xl` : `text-5xl` : `text-6xl`}`} >{label || 'ЯЙЦА'}</div >
+                <div className={`absolute overflow-clip left-[-25px] bottom-[-30px] w-[310px] h-[80px] rounded-full bg-opacity-100 bg-pink-500 px-1 py-1  flex text-center align-middle items-center justify-center text-slate-200 ${label.length > 7 ? label.length > 12 ? label.length > 15 ? `text-3xl` : `text-4xl` : `text-5xl` : `text-6xl`}`} >{label || 'ЯЙЦА'}</div >
               </div>
               <div className="flex flex-row gap-5 justify-center items-center" >
-                <Avatar height={75} width={75} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar height={50} width={50} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar height={25} width={25} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar height={10} width={10} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar height={75} width={75} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar height={50} width={50} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar height={25} width={25} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar height={10} width={10} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
               </div>
               <Modal.Actions>
                 <Button color="secondary" disabled={isSaving} onClick={() => { resetForm(); props.onClose() }}>Отмена</Button>
-                <Button color="primary" loading={isSaving} disabled={showValidationErrors && !isValid} className={`${showValidationErrors && !isValid ? 'ring-error ring-2' : ''} `} onClick={() => { handleGameSubmit(save, (err) => { setShowValidationErrors(true); setCollapsedDlcs(dlcs.filter(x => err.dlcs && !err.dlcs[x.position]).map(x => x.position)) })() }}>Сохранить</Button>
+                <Button color="primary" loading={isSaving} disabled={showValidationErrors && !isValid} className={`${showValidationErrors && !isValid ? 'ring-error ring-2' : ''} `} onClick={() => { handleAnimeSubmit(save, (err) => { setShowValidationErrors(true); setCollapsedDlcs(dlcs.filter(x => err.dlcs && !err.dlcs[x.position]).map(x => x.position)) })() }}>Сохранить</Button>
               </Modal.Actions>
             </div>
           </div>
@@ -370,5 +345,5 @@ const CreateGameModal: React.FC<Props> = (props) => {
   );
 };
 
-export default CreateGameModal;
+export default CreateAnimeModal;
 

@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import MainUILayer from "../components/MainUILayer";
 import GameCanvas from "../components/Three/GameCanvas";
 import { Button } from "react-daisyui";
 import Link from "next/link";

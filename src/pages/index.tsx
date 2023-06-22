@@ -9,6 +9,8 @@ const Home: NextPage = () => {
   const router = useRouter()
   if (status === 'authenticated')
     router.push('/home')
+  if (status === 'loading')
+    return <div></div>
   return (
     <>
       <Head>

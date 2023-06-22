@@ -105,6 +105,8 @@ model Player {
     image    Image?  @relation(fields: [imageUrl], references: [url])
     user     User    @relation(fields: [userId], references: [id])
 
+    isRussian Boolean @default(false)
+
     playerTiles    PlayerTile[]
     playerContents PlayerContent[]
     coops          Coop[]
@@ -210,6 +212,7 @@ model Content {
     addedById String
     ownedById String
 
+    type           ContentType
     label          String         @db.VarChar(16)
     title          String         @db.VarChar(128)
     hours          Decimal        @db.Decimal(3, 1)
@@ -228,6 +231,12 @@ model Content {
     playerContents PlayerContent[]
     coops          Coop[]
     DLCs           ContentDLC[]
+}
+
+enum ContentType {
+    game
+    movie
+    anime
 }
 
 model ContentDLC {

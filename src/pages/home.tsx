@@ -11,6 +11,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { Shrikhand } from "next/font/google";
 import { FaUserEdit } from "react-icons/fa"
+import { api } from "../utils/api";
 
 const shrikhand = Shrikhand({
   style: ['normal'],
@@ -21,8 +22,13 @@ const shrikhand = Shrikhand({
 const GameField: NextPage = () => {
   const { status } = useSession()
   const router = useRouter()
+  const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
   if (status === 'unauthenticated')
     router.push('/')
+  if (status === 'loading' || meStatus === 'loading')
+    return null
+  if (meStatus === 'error' || (meStatus === 'success' && !me))
+    router.push('/register')
   return (
     <>
       <Head>

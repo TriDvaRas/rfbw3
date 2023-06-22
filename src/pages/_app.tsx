@@ -5,7 +5,9 @@ import { Rubik } from "next/font/google";
 import { Theme } from "react-daisyui";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "~/styles/globals.css";
+import 'react-toastify/dist/ReactToastify.css';
 import { api } from "~/utils/api";
+import { ToastContainer } from "react-toastify";
 const rubic = Rubik({
   style: ['normal', 'italic'],
   subsets: ['latin', 'cyrillic', 'cyrillic-ext', 'hebrew', 'latin-ext'],
@@ -27,6 +29,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <QueryClientProvider client={queryClient}>
           <Theme dataTheme="rfbw" className="bg-gradient-to-b from-slate-800 to-black">
             <Component {...pageProps} />
+            <ToastContainer
+              position="bottom-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark" />
           </Theme>
         </QueryClientProvider>
       </SessionProvider>

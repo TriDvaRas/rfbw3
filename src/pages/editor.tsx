@@ -10,6 +10,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFileUpload } from '../hooks/useFileUpload';
 import CreateGameModal from "../components/modals/CreateGameModal";
+import CreateMovieModal from "../components/modals/CreateMovieModal";
+import CreateAnimeModal from "../components/modals/CreateAnimeModal";
 
 
 const gameFormSchema = z.object({
@@ -33,10 +35,14 @@ const Editor: NextPage = () => {
   const { status } = useSession()
   const router = useRouter()
 
-  const [showCustomItemModal, setShowCustomItemModal] = useState(false)
+  const [showNewGameModal, setShowNewGameModal] = useState(false)
+  const [showNewMovieModal, setShowNewMovieModal] = useState(false)
+  const [showNewAnimeModal, setShowNewAnimeModal] = useState(false)
 
   if (status === 'unauthenticated')
     router.push('/')
+  if (status === 'loading')
+    return <div></div>
   return (
     <>
       <Head>
@@ -51,14 +57,16 @@ const Editor: NextPage = () => {
                 <div className="text-4xl text-center">Редактор Контента</div>
                 <div className="text-center px-12">Данный элемент программного интерфейса предназначен для редактирования и добавления контента в ваш список, который пойдет в общий список контента, который будет выпадать всем игрокам во время ивента. Просим отнестись (сись) к заполнению серьезно, <s>по возможности</s> обязательно добавить везде жанр и продолжительность, спасибо!</div>
                 <div className="flex flex-row justify-center items-center gap-2 my-3">
-                  <InputGroup>
+                  {/* <InputGroup>
                     <span className="bg-slate-900 -me-2">Импорт:</span>
                     <Button color="secondary" size="sm">HowLongToBeat</Button>
                     <Button color="secondary" size="sm" disabled>IMDB</Button>
                     <Button color="secondary" size="sm">Shikimori</Button>
                     <Button color="secondary" size="sm">RFBW</Button>
-                  </InputGroup>
-                  <Button color="warning" size="sm" onClick={() => setShowCustomItemModal(true)}>Создать Вручную</Button>
+                  </InputGroup> */}
+                  <Button color="primary" className="" size="sm" onClick={() => setShowNewGameModal(true)}>Добавить Игру</Button>
+                  <Button color="primary" size="sm" onClick={() => setShowNewMovieModal(true)}>Добавить Кино</Button>
+                  <Button color="primary" size="sm" onClick={() => setShowNewAnimeModal(true)}>Добавить Аниме</Button>
                 </div>
               </div>
             </div>
@@ -66,14 +74,16 @@ const Editor: NextPage = () => {
               <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">Игры<Badge size="lg" color="warning">1</Badge></div>
             </div>
             <div className="col-span-1 row-span-1">
-              <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">Кинематограф<Badge size="lg" color="error">0</Badge></div>
+              <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">Кино<Badge size="lg" color="error">0</Badge></div>
             </div>
             <div className="col-span-1 row-span-1">
               <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">Аниме<Badge size="lg" color="secondary">12</Badge></div>
             </div>
           </div>
         }
-        <CreateGameModal open={showCustomItemModal} onClose={() => setShowCustomItemModal(false)} onSuccess={() => setShowCustomItemModal(false)} />
+        <CreateGameModal open={showNewGameModal} onClose={() => setShowNewGameModal(false)} onSuccess={() => setShowNewGameModal(false)} />
+        <CreateMovieModal open={showNewMovieModal} onClose={() => setShowNewMovieModal(false)} onSuccess={() => setShowNewMovieModal(false)} />
+        <CreateAnimeModal open={showNewAnimeModal} onClose={() => setShowNewAnimeModal(false)} onSuccess={() => setShowNewAnimeModal(false)} />
       </main>
     </>
   );

@@ -25,6 +25,8 @@ export const uploadRouter = createTRPCRouter({
   })).mutation(async ({ ctx, input }) => {
     const _uuid = uuid();
     const Key = `rfbw/${ctx.session.user.name}/${_uuid}-${input.fileName}`;
+    const escapedKey = `rfbw/${ctx.session.user.name}/${_uuid}-${encodeURIComponent(input.fileName)}`;
+    
     try {
       const { fields, url } = await createPresignedPost(s3, {
         Bucket: env.S3_BUCKET,
@@ -32,7 +34,7 @@ export const uploadRouter = createTRPCRouter({
         Conditions: [
           ['content-length-range', 0, 16 * 1024 * 1024], // max size 16MB, adjust as needed
           ['eq', '$Content-Type', input.mimeType],
-          ['starts-with', '$key', 'rfbw/'],
+          ['starts-with', '$key', `rfbw/${ctx.session.user.name}/`],
           { acl: 'public-read' },
           // { bucket: env.S3_BUCKET }
         ],
@@ -44,7 +46,7 @@ export const uploadRouter = createTRPCRouter({
           url: `https://${env.S3_BUCKET}.s3.${env.S3_REGION}.amazonaws.com/${Key}`,
         }
       });
-      return { url, fields, Key }
+      return { url, fields, Key:escapedKey }
     } catch (err) {
       console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Error creating pre-signed URL' });

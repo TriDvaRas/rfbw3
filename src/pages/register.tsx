@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
-import { Button, FileInput, Form, Hero, Input, InputGroup, Steps, Textarea } from 'react-daisyui';
+import { Button, FileInput, Form, Hero, Input, InputGroup, RadialProgress, Steps, Textarea } from 'react-daisyui';
 import { BsDiscord } from 'react-icons/bs';
 import { ImExit } from "react-icons/im";
 import { api } from "../utils/api";
@@ -10,6 +10,7 @@ import { useFileUpload } from "../hooks/useFileUpload";
 import Avatar from "../components/util/Avatar";
 import { getNameInitials } from "../utils/text";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const GameField: NextPage = () => {
   const utils = api.useContext()
@@ -21,9 +22,13 @@ const GameField: NextPage = () => {
       utils.users.getMe.invalidate()
     },
     onSuccess(data) {
+      toast.success('Заявка отправлена')
       utils.users.getMe.setData(undefined, () => {
         return data
       })
+    },
+    onError(err) {
+      toast.error(err.message)
     }
   })
   const { mutate: mutateMyPlayer, isLoading: isMyPlayerLoading } = api.players.createMyPlayer.useMutation({
@@ -31,9 +36,13 @@ const GameField: NextPage = () => {
       utils.players.getMyPlayer.invalidate()
     },
     onSuccess(data) {
+      toast.success('Профиль создан')
       utils.players.getMyPlayer.setData(undefined, () => {
         return data
       })
+    },
+    onError(err) {
+      toast.error(err.message)
     }
   })
 
@@ -42,6 +51,9 @@ const GameField: NextPage = () => {
   const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
     onSuccess(url) {
       setLocalImageSource(url)
+    },
+    onError(err) {
+      toast.error(`Ошибка загрузки: ${err}`)
     }
   })
 
@@ -55,6 +67,8 @@ const GameField: NextPage = () => {
     if (isApplicationSaving) return
     mutateApplicationMessage(applicationMesage)
   }
+  if (sessionStatus === 'loading')
+    return <div></div>
   return (
     <>
       <Head>
@@ -129,7 +143,13 @@ const GameField: NextPage = () => {
                 <h1 className="text-5xl font-bold">Регистрация</h1>
                 <h3 className="text-2xl font-bold mt-1 mb-5">Создание профиля игрока</h3>
                 {/* <p className="py-6 -mt-1">Хуй.</p> */}
-                <Avatar width={256} height={256} shape={'circle'} letters={getNameInitials(localPlayerName || me.name)} src={localImageSource} className="text-7xl" />
+                <div>
+
+                </div>
+                <div className="relative">
+                  <Avatar width={256} height={256} shape={'circle'} letters={getNameInitials(localPlayerName || me.name)} src={localImageSource} className="text-7xl" />
+                  {isUploading && <div className='absolute top-0 mask mask-circle w-full h-full bg-slate-900 bg-opacity-80 flex justify-center items-center'><RadialProgress value={progress}>{progress}%</RadialProgress></div>}
+                </div>
                 <h3 className="text-3xl font-bold mt-2 mb-0">{localPlayerName || me.name}</h3>
                 <h5 className="text-lg font-thin mt-0 mb-5">{localPlayerDescription}</h5>
                 <Form className="" onSubmit={(e) => {
@@ -195,7 +215,7 @@ const GameField: NextPage = () => {
                     left: 'calc(50% - 6px)',
                     transform: 'rotate(-7deg)',
                   }}></div>
-                                    <div style={{
+                  <div style={{
                     width: '0',
                     height: '0',
                     borderBottom: '28px solid lime',
