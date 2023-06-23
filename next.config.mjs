@@ -15,13 +15,15 @@ const config = {
    * @see https://github.com/vercel/next.js/issues/41980
    */
   i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
+    locales: ["en","ru"],
+    defaultLocale: "ru",
   },
   experimental: {
     esmExternals: false, // THIS IS THE FLAG THAT MATTERS
   },
   images: {
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // minimumCacheTTL: 3600,
     remotePatterns: [
       { 
         protocol: 'https',

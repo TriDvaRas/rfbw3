@@ -119,13 +119,18 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 const enforceUserIsPlayer = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || !(await prisma.player.findUnique({ where: { userId: ctx.session.user.id } }))) {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Кто?" });
+  }
+  const player = await prisma.player.findUnique({ where: { userId: ctx.session.user.id } })
+  if (!player) {
     throw new TRPCError({ code: "FORBIDDEN", message: "Пошел нахуй." });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
       session: { ...ctx.session, user: ctx.session.user },
+      player,
     },
   });
 });

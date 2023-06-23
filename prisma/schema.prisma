@@ -111,6 +111,9 @@ model Player {
     playerContents PlayerContent[]
     coops          Coop[]
     coopInvites    CoopInvite[]
+    addedContent   Content[]       @relation("AddedContent")
+    ownedContent   Content[]       @relation("OwnedContent")
+    Content        Content[]
 }
 
 model PlayerTile {
@@ -181,10 +184,17 @@ model CoopInvite {
     createdAt DateTime @default(now()) @db.Timestamptz(6)
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-    coopId     String @db.Uuid
-    receiverId String @db.Uuid
-    coop       Coop   @relation(fields: [coopId], references: [id])
-    receiver   Player @relation(fields: [receiverId], references: [id])
+    coopId     String           @db.Uuid
+    receiverId String           @db.Uuid
+    coop       Coop             @relation(fields: [coopId], references: [id])
+    receiver   Player           @relation(fields: [receiverId], references: [id])
+    result     CoopInviteResult
+}
+
+enum CoopInviteResult {
+    pending
+    accepted
+    declined
 }
 
 //!
@@ -209,8 +219,8 @@ model Content {
     id        String   @id @default(uuid()) @db.Uuid
     createdAt DateTime @default(now()) @db.Timestamptz(6)
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
-    addedById String
-    ownedById String
+    addedById String   @db.Uuid
+    ownedById String   @db.Uuid
 
     type           ContentType
     label          String         @db.VarChar(16)
@@ -228,9 +238,14 @@ model Content {
     comments     String  @default("")
     endCondition String  @default("")
 
+    addedBy Player @relation("AddedContent", fields: [addedById], references: [id])
+    owner   Player @relation("OwnedContent", fields: [ownedById], references: [id])
+
     playerContents PlayerContent[]
     coops          Coop[]
     DLCs           ContentDLC[]
+    Player         Player?         @relation(fields: [playerId], references: [id])
+    playerId       String?         @db.Uuid
 }
 
 enum ContentType {

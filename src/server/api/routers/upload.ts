@@ -43,7 +43,7 @@ export const uploadRouter = createTRPCRouter({
       await prisma.image.create({
         data: {
           addedById: ctx.session.user.id,
-          url: `https://${env.S3_BUCKET}.s3.${env.S3_REGION}.amazonaws.com/${Key}`,
+          url: `https://${env.S3_BUCKET}.s3.${env.S3_REGION}.amazonaws.com/${escapedKey}`,
         }
       });
       return { url, fields, Key:escapedKey }

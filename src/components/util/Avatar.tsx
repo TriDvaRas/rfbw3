@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -11,14 +11,14 @@ import {
   ComponentSize,
 } from 'react-daisyui/dist/types'
 import Image from 'next/image'
+import { Mask } from 'react-daisyui'
+import { set } from 'lodash'
 
 export type AvatarProps = React.HTMLAttributes<HTMLDivElement> &
   IComponentBaseProps & {
-    width: number
-    height: number
+    size: number
     src?: string | null
     letters?: string
-    size?: ComponentSize | number
     shape?: ComponentShape
     color?: ComponentColor
     border?: boolean
@@ -39,9 +39,7 @@ export const isSingleStringChild = (children?: React.ReactNode) => {
 }
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   function Avatar({
-    size = 'md',
-    width,
-    height,
+    size,
     src,
     letters,
     shape,
@@ -78,10 +76,6 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       'ring-warning': borderColor === 'warning',
       'rounded-btn': shape === 'square',
       'rounded-full': shape === 'circle',
-      'w-32 h-32': size === 'lg',
-      'w-24 h-24': size === 'md',
-      'w-14 h-14': size === 'sm',
-      'w-10 h-10': size === 'xs',
     })
 
     const placeholderClasses = clsx({
@@ -114,20 +108,67 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       'ring-warning': borderColor === 'warning',
       'rounded-btn': shape === 'square',
       'rounded-full': shape === 'circle',
-      'w-32 h-32 text-3xl': size === 'lg',
-      'w-24 h-24 text-xl': size === 'md',
-      'w-14 h-14': size === 'sm',
-      'w-10 h-10': size === 'xs',
     })
-
-    const customImgDimension = { width, height }
-
-    const renderAvatarContents = () => {
+    const [_width, setWidth] = useState(size)
+    const [_height, setHeight] = useState(size)
+    const customImgDimension = { width: size, height: size }
+    const [imageLoadedState, setImageLoadedState] = useState<0 | 1 | 2>(0)
+    useEffect(() => {
+      setImageLoadedState(0)
+    }, [src])
+    const renderAvatarContents = (loadState: 0 | 1 | 2) => {
       // Base case, if src is provided, render img
       if (src) {
         return (
           <div className={`${imgClasses} ${imageClassName}`} style={customImgDimension}>
-            <Image quality={100} src={src} alt={''} width={width} height={height} />
+            {
+              loadState == 0 && <Image quality={40} src={src} alt={''} width={20} height={20} className={`mask mask-circle blur`}
+                onLoadingComplete={(e) => {
+                  const containerMult = 1
+                  const naturalMult = e.naturalWidth / e.naturalHeight
+
+
+                  if (naturalMult > containerMult) {
+                    console.log("1", {
+                      size,
+                      naturalMult,
+                      containerMult,
+                      nwidth: e.naturalWidth,
+                      nheight: e.naturalHeight
+
+                    });
+                    const reqH = _height * 1.2
+                    const reqW = reqH * naturalMult
+                    setHeight(reqH)
+                    setWidth(reqW)
+                    setImageLoadedState(1)
+                  }
+                  else {
+                    console.log("2", {
+                      size,
+                      naturalMult,
+                      containerMult,
+                      nwidth: e.naturalWidth,
+                      nheight: e.naturalHeight
+
+                    });
+                    const reqW = _width * 1.2
+                    const reqH = reqW / naturalMult
+                    setWidth(reqW)
+                    setHeight(reqH)
+                    setImageLoadedState(1)
+                  }
+                }} />
+            }
+            {
+              loadState == 1 && <Image quality={100} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle blur`}
+                onLoadingComplete={(e) => {
+                  setImageLoadedState(2)
+                }} />
+            }
+            {
+              loadState == 2 && <Image quality={100} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle`} />
+            }
           </div>
         )
       }
@@ -163,7 +204,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         className={containerClasses}
         ref={ref}
       >
-        {renderAvatarContents()}
+        {/* <div className=' -left-10 -top-10 z-20'>{imageLoadedState}</div> */}
+        {renderAvatarContents(imageLoadedState)}
       </div>
     )
   }

@@ -12,6 +12,11 @@ import { useFileUpload } from '../hooks/useFileUpload';
 import CreateGameModal from "../components/modals/CreateGameModal";
 import CreateMovieModal from "../components/modals/CreateMovieModal";
 import CreateAnimeModal from "../components/modals/CreateAnimeModal";
+import Link from "next/link";
+import { AiFillHome } from "react-icons/ai";
+import { api } from "../utils/api";
+import { BounceLoader, GridLoader } from "react-spinners";
+import ContentPreview from "../components/previews/ContentPreview";
 
 
 const gameFormSchema = z.object({
@@ -34,6 +39,8 @@ type GameFormSchema = z.infer<typeof gameFormSchema>
 const Editor: NextPage = () => {
   const { status } = useSession()
   const router = useRouter()
+  const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
+  const { data: myContent, status: myContentStatus, refetch: refetchMyContent } = api.content.getMyContent.useQuery()
 
   const [showNewGameModal, setShowNewGameModal] = useState(false)
   const [showNewMovieModal, setShowNewMovieModal] = useState(false)
@@ -41,8 +48,13 @@ const Editor: NextPage = () => {
 
   if (status === 'unauthenticated')
     router.push('/')
-  if (status === 'loading')
-    return <div></div>
+  if (status === 'loading' || meStatus === 'loading')
+    return null
+  if (meStatus === 'error' || (meStatus === 'success' && !me))
+    router.push('/register')
+  const games = myContent?.filter(c => c.type === 'game') ?? []
+  const movies = myContent?.filter(c => c.type === 'movie') ?? []
+  const animes = myContent?.filter(c => c.type === 'anime') ?? []
   return (
     <>
       <Head>
@@ -51,11 +63,11 @@ const Editor: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-b ">
         {
-          status === 'authenticated' && <div className="grid grid-cols-3 grid-rows-2 container max-w-4xl ">
+          status === 'authenticated' && <div className="container max-w-5xl ">
             <div className="col-span-3 row-span-1 my-4">
               <div className="flex flex-col items-center justify-center gap-1">
                 <div className="text-4xl text-center">Редактор Контента</div>
-                <div className="text-center px-12">Данный элемент программного интерфейса предназначен для редактирования и добавления контента в ваш список, который пойдет в общий список контента, который будет выпадать всем игрокам во время ивента. Просим отнестись (сись) к заполнению серьезно, <s>по возможности</s> обязательно добавить везде жанр и продолжительность, спасибо!</div>
+                <div className="text-center px-16">Данный элемент программного интерфейса предназначен для редактирования и добавления контента в ваш список, который пойдет в общий список контента, который будет выпадать всем игрокам во время ивента. Просим отнестись (сись) к заполнению серьезно! Мы рекомендуем добавить хотя бы по 4 в каждой категории, по возможности обязательно добавить везде жанр и продолжительность и читать правила, спасибо!</div>
                 <div className="flex flex-row justify-center items-center gap-2 my-3">
                   {/* <InputGroup>
                     <span className="bg-slate-900 -me-2">Импорт:</span>
@@ -64,26 +76,64 @@ const Editor: NextPage = () => {
                     <Button color="secondary" size="sm">Shikimori</Button>
                     <Button color="secondary" size="sm">RFBW</Button>
                   </InputGroup> */}
-                  <Button color="primary" className="" size="sm" onClick={() => setShowNewGameModal(true)}>Добавить Игру</Button>
+                  <Button color="primary" size="sm" onClick={() => setShowNewGameModal(true)}>Добавить Игру</Button>
                   <Button color="primary" size="sm" onClick={() => setShowNewMovieModal(true)}>Добавить Кино</Button>
                   <Button color="primary" size="sm" onClick={() => setShowNewAnimeModal(true)}>Добавить Аниме</Button>
                 </div>
               </div>
             </div>
-            <div className="col-span-1 row-span-1">
-              <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">Игры<Badge size="lg" color="warning">1</Badge></div>
-            </div>
-            <div className="col-span-1 row-span-1">
-              <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">Кино<Badge size="lg" color="error">0</Badge></div>
-            </div>
-            <div className="col-span-1 row-span-1">
-              <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">Аниме<Badge size="lg" color="secondary">12</Badge></div>
+            <div className="grid grid-cols-3 grid-rows-1 ">
+              <div className="col-span-1 row-span-1 flex flex-col items-center gap-2">
+                <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">
+                  Игры
+                  <Badge size="lg"
+                    color={games.length > 3 ? "secondary" : games.length > 0 ? "warning" : "error"}>
+                    {games.length ?? <BounceLoader size={7} />}
+                  </Badge>
+                </div>
+                {
+                  games.length > 0 && games.map(game => <ContentPreview key={game.id} label={game.label} type="game" imageUrl={game.imageId} />)
+                }
+              </div>
+              <div className="col-span-1 row-span-1 flex flex-col items-center gap-2">
+                <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">
+                  Кино
+                  <Badge size="lg"
+                    color={movies.length > 3 ? "secondary" : movies.length > 0 ? "warning" : "error"}>
+                    {movies.length ?? <BounceLoader size={7} />}
+                  </Badge>
+                </div>
+                {
+                  movies.length > 0 && movies.map(movie => <ContentPreview key={movie.id} label={movie.label} type="movie" imageUrl={movie.imageId} />)
+                }
+                {myContentStatus === 'loading' && <div className="flex items-center justify-center h-[60vh]">
+                  <GridLoader color="#36d7b788" />
+                </div>}
+              </div>
+              <div className="col-span-1 row-span-1 flex flex-col items-center gap-2">
+                <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">
+                  Аниме
+                  <Badge size="lg"
+                    color={animes.length > 3 ? "secondary" : animes.length > 0 ? "warning" : "error"}>
+                    {animes.length ?? <BounceLoader size={7} />}
+                  </Badge>
+                </div>
+                {
+                  animes.length > 0 && animes.map(anime => <ContentPreview key={anime.id} label={anime.label} type="anime" imageUrl={anime.imageId} />)
+                }
+              </div>
             </div>
           </div>
+
         }
-        <CreateGameModal open={showNewGameModal} onClose={() => setShowNewGameModal(false)} onSuccess={() => setShowNewGameModal(false)} />
-        <CreateMovieModal open={showNewMovieModal} onClose={() => setShowNewMovieModal(false)} onSuccess={() => setShowNewMovieModal(false)} />
-        <CreateAnimeModal open={showNewAnimeModal} onClose={() => setShowNewAnimeModal(false)} onSuccess={() => setShowNewAnimeModal(false)} />
+        <CreateGameModal open={showNewGameModal} onClose={() => setShowNewGameModal(false)} onSuccess={() => { setShowNewGameModal(false); refetchMyContent() }} />
+        <CreateMovieModal open={showNewMovieModal} onClose={() => setShowNewMovieModal(false)} onSuccess={() => { setShowNewMovieModal(false); refetchMyContent() }} />
+        <CreateAnimeModal open={showNewAnimeModal} onClose={() => setShowNewAnimeModal(false)} onSuccess={() => { setShowNewAnimeModal(false); refetchMyContent() }} />
+        <Link href={'/home'} className="absolute left-4 top-4">
+          <Button color="secondary" shape="circle">
+            <AiFillHome className="text-xl" />
+          </Button>
+        </Link>
       </main>
     </>
   );

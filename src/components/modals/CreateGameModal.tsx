@@ -18,6 +18,7 @@ import { GenreId, genreIdToName, genreIds } from "../../utils/genres";
 import Avatar from "../util/Avatar";
 import { z } from 'zod';
 import { toast } from 'react-toastify';
+import ContentPreview from '../previews/ContentPreview';
 
 export const gameDLCSchema = z.object({
   hours: z.coerce.number().min(0.1, { message: ':)' }).max(10, { message: 'До 10 часов' }),
@@ -342,17 +343,20 @@ const CreateGameModal: React.FC<Props> = (props) => {
           {/* //! 3 */}
           <div className="w-1/3 flex flex-col  items-center justify-center max-h-full">
             <div className="flex flex-col  items-center justify-center">
-              <div className="w-[260px] h-[390px] relative mb-12 bg-slate-800 ">
-                <Image src={getGameValues().imageURL || '/errorAvatar.jpg'} layout="fill" alt="Ты не должен этого видеть. Перезалей картинку." width={300} height={450} className="object-cover rounded-lg" />
-                {isUploading && <div className='absolute w-full h-full bg-slate-900 bg-opacity-80 flex justify-center items-center'><RadialProgress value={progress}>{progress}%</RadialProgress></div>}
-                {me && <Avatar height={40} width={40} src={me.imageUrl || '/errorAvatar.jpg'} className='absolute right-[-16px] top-[-16px]' shape='circle' />}
-                <div className={`absolute overflow-clip left-[-25px] bottom-[-30px] w-[310px] h-[80px] rounded-full bg-opacity-100 bg-green-600 px-1 py-1  flex text-center align-middle items-center justify-center text-slate-200 ${label.length > 7 ? label.length > 12 ? label.length > 15 ? `text-3xl` : `text-4xl` : `text-5xl` : `text-6xl`}`} >{label || 'ЯЙЦА'}</div >
-              </div>
+              <ContentPreview
+                type="game"
+                label={label}
+                // imageUrl={`https://tdr-starlight-my-ass-98.s3.eu-central-1.amazonaws.com/rfbw/TheRat(Not)Bot/ef74b073-82d0-4b5a-a7ea-01fc9486b58c-1IV-UI1mQ20.jpg`}
+                imageUrl={imageURL}
+                authorImageUrl={me?.imageUrl as string}
+                isUploading={isUploading}
+                progress={progress}
+              />
               <div className="flex flex-row gap-5 justify-center items-center" >
-                <Avatar height={75} width={75} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar height={50} width={50} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar height={25} width={25} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar height={10} width={10} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={75} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={50} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={25} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={10} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
               </div>
               <Modal.Actions>
                 <Button color="secondary" disabled={isSaving} onClick={() => { resetForm(); props.onClose() }}>Отмена</Button>

@@ -11,6 +11,9 @@ import Avatar from "../components/util/Avatar";
 import { getNameInitials } from "../utils/text";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { PlayerProfileSchema, playerProfileSchema } from "./me";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const GameField: NextPage = () => {
   const utils = api.useContext()
@@ -47,21 +50,27 @@ const GameField: NextPage = () => {
   })
 
 
+  const playerForm = useForm<PlayerProfileSchema>({
+    defaultValues: {
+      imageUrl: '',
+      name: '',
+      motto: '',
+    },
+    resolver: zodResolver(playerProfileSchema),
+  });
+  const { imageUrl, motto, name } = playerForm.watch()
 
   const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
     onSuccess(url) {
-      setLocalImageSource(url)
+      playerForm.setValue('imageUrl', url)
+      playerForm.trigger('imageUrl')
     },
     onError(err) {
       toast.error(`Ошибка загрузки: ${err}`)
     }
   })
 
-
   const [applicationMesage, setApplicationMesage] = useState<string>('')
-  const [localImageSource, setLocalImageSource] = useState<string | undefined>(undefined)
-  const [localPlayerName, setLocalPlayerName] = useState('')
-  const [localPlayerDescription, setLocalPlayerDescription] = useState('')
 
   function submitApplication() {
     if (isApplicationSaving) return
@@ -143,27 +152,26 @@ const GameField: NextPage = () => {
                 <h1 className="text-5xl font-bold">Регистрация</h1>
                 <h3 className="text-2xl font-bold mt-1 mb-5">Создание профиля игрока</h3>
                 {/* <p className="py-6 -mt-1">Хуй.</p> */}
-                <div>
-
-                </div>
                 <div className="relative">
-                  <Avatar width={256} height={256} shape={'circle'} letters={getNameInitials(localPlayerName || me.name)} src={localImageSource} className="text-7xl" />
+                  <Avatar size={256} shape={'circle'} letters={getNameInitials(name)} src={imageUrl} className="text-7xl" />
                   {isUploading && <div className='absolute top-0 mask mask-circle w-full h-full bg-slate-900 bg-opacity-80 flex justify-center items-center'><RadialProgress value={progress}>{progress}%</RadialProgress></div>}
                 </div>
-                <h3 className="text-3xl font-bold mt-2 mb-0">{localPlayerName || me.name}</h3>
-                <h5 className="text-lg font-thin mt-0 mb-5">{localPlayerDescription}</h5>
-                <Form className="" onSubmit={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  mutateMyPlayer({
-                    motto: localPlayerDescription,
-                    imageUrl: localImageSource,
-                    name: localPlayerName,
+                <h3 className="text-3xl font-bold mt-2 mb-0">{name}</h3>
+                <h5 className="text-lg font-thin mt-0 mb-5">{motto}</h5>
+                <Form className="" onSubmit={playerForm.handleSubmit((data) => {
+                  mutateMyPlayer(data, {
+                    onSuccess() {
+                      toast.success('Профиль обновлен')
+                    },
+                    onError(err) {
+                      toast.error(`Ошибка обновления: ${err}`)
+                    }
                   })
-                }}>
+                })}>
                   {/* profile image */}
                   <Form.Label title="Аватар" />
                   <FileInput
+                    color={playerForm.formState.errors.imageUrl ? 'error' : undefined}
                     disabled={isMyPlayerLoading || isUploading}
                     bordered onChange={(e) => {
                       e.preventDefault()
@@ -172,21 +180,31 @@ const GameField: NextPage = () => {
                         startUpload(file)
                       }
                     }} />
+                  {
+                    playerForm.formState.errors.imageUrl && <span className=" label-text-alt text-error block mt-0.5 ms-3">{playerForm.formState.errors.imageUrl.message}</span>
+                  }
                   {/* Player name */}
-                  <Form.Label title="Имя" />
-                  <Input placeholder="Имя" value={localPlayerName} onInput={(e) => setLocalPlayerName(e.currentTarget.value)} />
+                  <Form.Label title="Имя" color={playerForm.formState.errors.name ? 'error' : undefined} />
+                  <Input  {...playerForm.register('name')} />
+                  {
+                    playerForm.formState.errors.name && <span className=" label-text-alt text-error block mt-0.5 ms-3">{playerForm.formState.errors.name.message}</span>
+                  }
                   {/* Player description */}
-                  <Form.Label title="Девиз" />
-                  <Textarea placeholder="" className="resize-none h-24 rounded-scollable" value={localPlayerDescription} onInput={(e) => setLocalPlayerDescription(e.currentTarget.value)} />
+                  <Form.Label title="Девиз" color={playerForm.formState.errors.motto ? 'error' : undefined} />
+                  <Textarea {...playerForm.register('motto')} className="resize-none h-24 rounded-scollable" />
+                  {
+                    playerForm.formState.errors.motto && <span className=" label-text-alt text-error block mt-0.5 ms-3">{playerForm.formState.errors.motto.message}</span>
+                  }
+
                   <Form.Label ><span className="label-text-alt text-slate-500">Желательно что то короткое и пафосное</span></Form.Label>
-                  <Button color="primary" loading={isMyPlayerLoading} disabled={isMyPlayerLoading || isUploading || localPlayerName.length == 0}>Сохранить</Button>
+                  <Button color="primary" loading={isMyPlayerLoading} disabled={isMyPlayerLoading || isUploading || (playerForm.formState.errors && !playerForm.formState.isValid)}>Сохранить</Button>
                 </Form>
 
               </div>
             }
             {/*//! STEP 4 */}
             {sessionStatus == 'authenticated' && player && <div className="max-w-md">
-              <Avatar width={256} height={256} shape={'circle'} letters={getNameInitials(player.name)} src={player.imageUrl} className="text-7xl" />
+              <Avatar size={256} shape={'circle'} letters={getNameInitials(player.name)} src={player.imageUrl} className="text-7xl" />
               <h3 className="text-3xl font-bold mt-2 mb-0">{player.name}</h3>
               <h5 className="text-lg font-thin mt-0 mb-5">{player.about}</h5>
               <h3 className="text-2xl font-bold mt-1 mb-5">Добро пожаловать :)</h3>

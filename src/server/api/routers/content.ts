@@ -9,6 +9,13 @@ import { movieFormSchema } from "../../../components/modals/CreateMovieModal";
 
 
 export const contentRouter = createTRPCRouter({
+  getMyContent: playerProtectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.content.findMany({
+      where: {
+        ownedById: ctx.player.id,
+      },
+    });
+  }),
   createGameContent: playerProtectedProcedure.input(gameFormSchema).mutation(({ ctx, input }) => {
     return ctx.prisma.content.create({
       data: {
@@ -22,8 +29,8 @@ export const contentRouter = createTRPCRouter({
         imageId: input.imageURL,
         genres: input.genres,
         comments: input.comments,
-        addedById: ctx.session.user.id,
-        ownedById: ctx.session.user.id,
+        addedById: ctx.player.id,
+        ownedById: ctx.player.id,
 
         DLCs: {
           create: input.dlcs
@@ -44,8 +51,8 @@ export const contentRouter = createTRPCRouter({
         imageId: input.imageURL,
         genres: input.genres,
         comments: input.comments,
-        addedById: ctx.session.user.id,
-        ownedById: ctx.session.user.id,
+        addedById: ctx.player.id,
+        ownedById: ctx.player.id,
 
         DLCs: {
           create: input.dlcs
@@ -56,7 +63,7 @@ export const contentRouter = createTRPCRouter({
   createAnimeContent: playerProtectedProcedure.input(movieFormSchema).mutation(({ ctx, input }) => {
     return ctx.prisma.content.create({
       data: {
-        type: "movie",
+        type: "anime",
         label: input.label,
         title: input.fullname,
         hours: input.hours,
@@ -66,8 +73,8 @@ export const contentRouter = createTRPCRouter({
         imageId: input.imageURL,
         genres: input.genres,
         comments: input.comments,
-        addedById: ctx.session.user.id,
-        ownedById: ctx.session.user.id,
+        addedById: ctx.player.id,
+        ownedById: ctx.player.id,
 
         DLCs: {
           create: input.dlcs
