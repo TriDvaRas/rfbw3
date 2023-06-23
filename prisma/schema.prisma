@@ -303,7 +303,6 @@ enum ContentGenre {
     rpg
     school
     sci_fi
-    science_fiction
     shooter
     simulator
     slasher

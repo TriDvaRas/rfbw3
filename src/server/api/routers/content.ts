@@ -6,6 +6,7 @@ import {
 } from "~/server/api/trpc";
 import { gameFormSchema } from "../../../components/modals/CreateGameModal";
 import { movieFormSchema } from "../../../components/modals/CreateMovieModal";
+import { animeFormSchema } from "../../../components/modals/CreateAnimeModal";
 
 
 export const contentRouter = createTRPCRouter({
@@ -13,6 +14,12 @@ export const contentRouter = createTRPCRouter({
     return await ctx.prisma.content.findMany({
       where: {
         ownedById: ctx.player.id,
+      },
+      include: {
+        DLCs: true,
+      },
+      orderBy: {
+        createdAt: 'asc'
       },
     });
   }),
@@ -60,7 +67,7 @@ export const contentRouter = createTRPCRouter({
       },
     });
   }),
-  createAnimeContent: playerProtectedProcedure.input(movieFormSchema).mutation(({ ctx, input }) => {
+  createAnimeContent: playerProtectedProcedure.input(animeFormSchema).mutation(({ ctx, input }) => {
     return ctx.prisma.content.create({
       data: {
         type: "anime",
@@ -82,5 +89,104 @@ export const contentRouter = createTRPCRouter({
       },
     });
   }),
-
+  updateGameContent: playerProtectedProcedure.input(z.object({
+    id: z.string(),
+    data: gameFormSchema
+  })).mutation(({ ctx, input }) => {
+    return ctx.prisma.$transaction(async (prisma) => {
+      // delete dlcs
+      await prisma.contentDLC.deleteMany({
+        where: {
+          contentId: input.id,
+        },
+      });
+      //update content and recreate dlcs
+      return ctx.prisma.content.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          label: input.data.label,
+          title: input.data.fullname,
+          hours: input.data.hours,
+          hasCoop: input.data.maxPlayers > 1,
+          maxCoopPlayers: input.data.maxPlayers,
+          endCondition: input.data.endCondition,
+          imageId: input.data.imageURL,
+          genres: input.data.genres,
+          comments: input.data.comments,
+          DLCs: {
+            create: input.data.dlcs
+          },
+        }
+      });
+    });
+  }),
+  updateMovieContent: playerProtectedProcedure.input(z.object({
+    id: z.string(),
+    data: movieFormSchema
+  })).mutation(({ ctx, input }) => {
+    return ctx.prisma.$transaction(async (prisma) => {
+      // delete dlcs
+      await prisma.contentDLC.deleteMany({
+        where: {
+          contentId: input.id,
+        },
+      });
+      //update content and recreate dlcs
+      return ctx.prisma.content.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          label: input.data.label,
+          title: input.data.fullname,
+          hours: input.data.hours,
+          imageId: input.data.imageURL,
+          genres: input.data.genres,
+          comments: input.data.comments,
+          DLCs: {
+            create: input.data.dlcs
+          },
+        }
+      });
+    });
+  }),
+  updateAnimeContent: playerProtectedProcedure.input(z.object({
+    id: z.string(),
+    data: animeFormSchema
+  })).mutation(({ ctx, input }) => {
+    return ctx.prisma.$transaction(async (prisma) => {
+      // delete dlcs
+      await prisma.contentDLC.deleteMany({
+        where: {
+          contentId: input.id,
+        },
+      });
+      //update content and recreate dlcs
+      return ctx.prisma.content.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          label: input.data.label,
+          title: input.data.fullname,
+          hours: input.data.hours,
+          imageId: input.data.imageURL,
+          genres: input.data.genres,
+          comments: input.data.comments,
+          DLCs: {
+            create: input.data.dlcs
+          },
+        }
+      });
+    });
+  }),
+  deleteContent: playerProtectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
+    return ctx.prisma.content.delete({
+      where: {
+        id: input
+      }
+    });
+  }),
 });

@@ -17,6 +17,11 @@ import { AiFillHome } from "react-icons/ai";
 import { api } from "../utils/api";
 import { BounceLoader, GridLoader } from "react-spinners";
 import ContentPreview from "../components/previews/ContentPreview";
+import { Content, ContentDLC } from "@prisma/client";
+import EditAnimeModal from "../components/modals/EditAnimeModal";
+import { toast } from "react-toastify";
+import EditMovieModal from "../components/modals/EditMovieModal";
+import EditGameModal from "../components/modals/EditGameModal";
 
 
 const gameFormSchema = z.object({
@@ -41,10 +46,22 @@ const Editor: NextPage = () => {
   const router = useRouter()
   const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
   const { data: myContent, status: myContentStatus, refetch: refetchMyContent } = api.content.getMyContent.useQuery()
-
+  const { mutate: deleteContent } = api.content.deleteContent.useMutation({
+    onSuccess: () => {
+      toast.success('Удалено')
+      refetchMyContent()
+    },
+    onError(error, variables, context) {
+      toast.error(error.message)
+    },
+  })
   const [showNewGameModal, setShowNewGameModal] = useState(false)
   const [showNewMovieModal, setShowNewMovieModal] = useState(false)
   const [showNewAnimeModal, setShowNewAnimeModal] = useState(false)
+
+  const [selectedEditContent, setSelectedEditContent] = useState<Content & {
+    DLCs: ContentDLC[];
+  } | undefined>(undefined)
 
   if (status === 'unauthenticated')
     router.push('/')
@@ -92,7 +109,9 @@ const Editor: NextPage = () => {
                   </Badge>
                 </div>
                 {
-                  games.length > 0 && games.map(game => <ContentPreview key={game.id} label={game.label} type="game" imageUrl={game.imageId} />)
+                  games.length > 0 && games.map(game => <ContentPreview key={game.id} label={game.label} type="game" imageUrl={game.imageId}
+                    onEdit={() => setSelectedEditContent(game)}
+                    onDelete={() => deleteContent(game.id)} />)
                 }
               </div>
               <div className="col-span-1 row-span-1 flex flex-col items-center gap-2">
@@ -104,7 +123,9 @@ const Editor: NextPage = () => {
                   </Badge>
                 </div>
                 {
-                  movies.length > 0 && movies.map(movie => <ContentPreview key={movie.id} label={movie.label} type="movie" imageUrl={movie.imageId} />)
+                  movies.length > 0 && movies.map(movie => <ContentPreview key={movie.id} label={movie.label} type="movie" imageUrl={movie.imageId}
+                    onEdit={() => setSelectedEditContent(movie)}
+                    onDelete={() => deleteContent(movie.id)} />)
                 }
                 {myContentStatus === 'loading' && <div className="flex items-center justify-center h-[60vh]">
                   <GridLoader color="#36d7b788" />
@@ -119,7 +140,13 @@ const Editor: NextPage = () => {
                   </Badge>
                 </div>
                 {
-                  animes.length > 0 && animes.map(anime => <ContentPreview key={anime.id} label={anime.label} type="anime" imageUrl={anime.imageId} />)
+                  animes.length > 0 && animes.map(anime => <ContentPreview key={anime.id}
+                    label={anime.label}
+                    type="anime"
+                    imageUrl={anime.imageId}
+                    onEdit={() => setSelectedEditContent(anime)}
+                    onDelete={() => deleteContent(anime.id)}
+                  />)
                 }
               </div>
             </div>
@@ -129,6 +156,56 @@ const Editor: NextPage = () => {
         <CreateGameModal open={showNewGameModal} onClose={() => setShowNewGameModal(false)} onSuccess={() => { setShowNewGameModal(false); refetchMyContent() }} />
         <CreateMovieModal open={showNewMovieModal} onClose={() => setShowNewMovieModal(false)} onSuccess={() => { setShowNewMovieModal(false); refetchMyContent() }} />
         <CreateAnimeModal open={showNewAnimeModal} onClose={() => setShowNewAnimeModal(false)} onSuccess={() => { setShowNewAnimeModal(false); refetchMyContent() }} />
+
+        {selectedEditContent?.type === 'game' &&
+          <EditGameModal open={selectedEditContent?.type === 'game'} onClose={() => setSelectedEditContent(undefined)} onSuccess={() => { setSelectedEditContent(undefined); refetchMyContent() }} gameId={selectedEditContent.id} defaultValues={{
+            label: selectedEditContent.label,
+            imageURL: selectedEditContent.imageId,
+            dlcs: selectedEditContent.DLCs.map(dlc => ({
+              label: dlc.label,
+              hours: +dlc.hours,
+              title: dlc.title,
+              endCondition: dlc.endCondition,
+              position: dlc.position,
+            })),
+            endCondition: selectedEditContent.endCondition,
+            maxPlayers: selectedEditContent.maxCoopPlayers,
+            genres: selectedEditContent.genres,
+            fullname: selectedEditContent.title,
+            hours: +selectedEditContent.hours,
+            comments: selectedEditContent.comments,
+          }} />}
+        {selectedEditContent?.type === 'movie' &&
+          <EditMovieModal open={selectedEditContent?.type === 'movie'} onClose={() => setSelectedEditContent(undefined)} onSuccess={() => { setSelectedEditContent(undefined); refetchMyContent() }} movieId={selectedEditContent.id} defaultValues={{
+            label: selectedEditContent.label,
+            imageURL: selectedEditContent.imageId,
+            dlcs: selectedEditContent.DLCs.map(dlc => ({
+              label: dlc.label,
+              hours: +dlc.hours,
+              title: dlc.title,
+              position: dlc.position,
+            })),
+            genres: selectedEditContent.genres,
+            fullname: selectedEditContent.title,
+            hours: +selectedEditContent.hours,
+            comments: selectedEditContent.comments,
+          }} />}
+        {selectedEditContent?.type === 'anime' &&
+          <EditAnimeModal open={selectedEditContent?.type === 'anime'} onClose={() => setSelectedEditContent(undefined)} onSuccess={() => { setSelectedEditContent(undefined); refetchMyContent() }} animeId={selectedEditContent.id} defaultValues={{
+            label: selectedEditContent.label,
+            imageURL: selectedEditContent.imageId,
+            dlcs: selectedEditContent.DLCs.map(dlc => ({
+              label: dlc.label,
+              hours: +dlc.hours,
+              title: dlc.title,
+              position: dlc.position,
+            })),
+            genres: selectedEditContent.genres,
+            fullname: selectedEditContent.title,
+            hours: +selectedEditContent.hours,
+            comments: selectedEditContent.comments,
+          }} />}
+
         <Link href={'/home'} className="absolute left-4 top-4">
           <Button color="secondary" shape="circle">
             <AiFillHome className="text-xl" />
