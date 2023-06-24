@@ -8,13 +8,13 @@ module.exports = {
                 NODE_ENV: "production"
             },
         },
-        {
-            name: "rfbw-expess",
-            script: "ts-node",
-            args: 'src/server/extra/server.ts',
-            env: {
-                NODE_ENV: "production"
-            }
-        },
+        // {
+        //     name: "rfbw-expess",
+        //     script: "ts-node",
+        //     args: 'src/server/extra/server.ts',
+        //     env: {
+        //         NODE_ENV: "production"
+        //     }
+        // },
     ]
 }
