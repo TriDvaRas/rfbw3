@@ -106,6 +106,8 @@ model Player {
     user     User    @relation(fields: [userId], references: [id])
 
     isRussian Boolean @default(false)
+    points    Int     @default(0)
+    money     Int     @default(0)
 
     playerTiles    PlayerTile[]
     playerContents PlayerContent[]
@@ -113,7 +115,6 @@ model Player {
     coopInvites    CoopInvite[]
     addedContent   Content[]       @relation("AddedContent")
     ownedContent   Content[]       @relation("OwnedContent")
-    Content        Content[]
 }
 
 model PlayerTile {
@@ -244,8 +245,6 @@ model Content {
     playerContents PlayerContent[]
     coops          Coop[]
     DLCs           ContentDLC[]
-    Player         Player?         @relation(fields: [playerId], references: [id])
-    playerId       String?         @db.Uuid
 }
 
 enum ContentType {

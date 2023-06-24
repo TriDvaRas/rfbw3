@@ -2,13 +2,39 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   playerProtectedProcedure,
-  protectedProcedure
+  protectedProcedure,
+  publicProcedure
 } from "~/server/api/trpc";
 import { playerProfileSchema } from "../../../pages/me";
 
 export const playersRouter = createTRPCRouter({
 
-
+  getAllPlayersWithContent: publicProcedure.input(z.object({
+    limit: z.number().min(1).max(100).nullish(),
+    cursor: z.string().nullish(),
+  })).query(async ({ ctx, input }) => {
+    const limit = input.limit ?? 20;
+    const { cursor } = input;
+    const items = await ctx.prisma.player.findMany({
+      take: limit + 1,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: {
+        createdAt: 'asc',
+      },
+      include: {
+        ownedContent: true,
+      },
+    })
+    let nextCursor: typeof cursor | undefined = undefined;
+    if (items.length > limit) {
+      const nextItem = items.pop()
+      nextCursor = nextItem!.id;
+    }
+    return {
+      items,
+      nextCursor,
+    };
+  }),
   getMyPlayer: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.player.findUnique({
       where: {

@@ -1,8 +1,10 @@
+await import("./src/env.mjs");
+import { env } from "./src/env.mjs";
+
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
- */
-await import("./src/env.mjs");
+*/
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -37,7 +39,7 @@ const config = {
     return [
       {
         source: '/api/extra/:path*',
-        destination: 'http://localhost:3001/:path*',
+        destination: `http://localhost:${env.EXPRESS_PORT}/:path*`,
       },
     ];
   },

@@ -3,7 +3,7 @@ module.exports = {
         {
             name: "rfbw-next",
             script: "next",
-            args: 'start',
+            args: 'start -p 15532',
             env: {
                 NODE_ENV: "production"
             },
