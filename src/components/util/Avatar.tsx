@@ -129,14 +129,6 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 
 
                   if (naturalMult > containerMult) {
-                    console.log("1", {
-                      size,
-                      naturalMult,
-                      containerMult,
-                      nwidth: e.naturalWidth,
-                      nheight: e.naturalHeight
-
-                    });
                     const reqH = _height * 1.2
                     const reqW = reqH * naturalMult
                     setHeight(reqH)
@@ -144,14 +136,6 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
                     setImageLoadedState(1)
                   }
                   else {
-                    console.log("2", {
-                      size,
-                      naturalMult,
-                      containerMult,
-                      nwidth: e.naturalWidth,
-                      nheight: e.naturalHeight
-
-                    });
                     const reqW = _width * 1.2
                     const reqH = reqW / naturalMult
                     setWidth(reqW)

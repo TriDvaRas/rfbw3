@@ -132,7 +132,6 @@ const CreateMovieModal: React.FC<Props> = (props) => {
     showValidationErrors && triggerMovie('dlcs')
   }
   function toggleDlc(position: number) {
-    console.log('toggle', position);
     if (collapsedDlcs.includes(position)) {
       setCollapsedDlcs(collapsedDlcs.filter(x => x !== position))
     } else {

@@ -90,7 +90,6 @@ const Sun: React.FC = () => {
         //     },
         // },
     })
-    console.log(skyRef.current);
 
     return (
         <group>

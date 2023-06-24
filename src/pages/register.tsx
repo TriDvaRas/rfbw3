@@ -117,7 +117,6 @@ const GameField: NextPage = () => {
                 <h3 className="text-2xl font-bold mt-1">Заявка на участие</h3>
                 <p className="py-6 -mt-1">Теперь опиши почему именно ты достоин в этом учавствовать.</p>
                 <Form onSubmit={(e) => {
-                  console.log('submit');
                   e.preventDefault()
                   submitApplication()
                 }}>
@@ -134,7 +133,6 @@ const GameField: NextPage = () => {
                 <h3 className="text-2xl font-bold mt-1">Заявка на участие</h3>
                 <p className="py-6 -mt-1">Заявка есть✔️. Пни кого нибудь что бы приняли. Ты все еще можешь изменить текст заявки.</p>
                 <Form onSubmit={(e) => {
-                  console.log('submit');
 
                   e.preventDefault()
                   submitApplication()

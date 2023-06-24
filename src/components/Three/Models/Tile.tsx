@@ -47,7 +47,6 @@ type Props = JSX.IntrinsicElements['group'] & {
 
 export function Tile(props: Props) {
   const { nodes, materials } = useGLTF('/tile-transformed.glb') as GLTFResult
-  console.log(materials);
   const refGrass = useRef<THREE.Mesh>(null!)
   const refDirt = useRef<THREE.Mesh>(null!)
   const refDirtInner = useRef<THREE.Mesh>(null!)
