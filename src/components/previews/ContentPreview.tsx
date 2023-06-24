@@ -15,13 +15,14 @@ type Props = {
     progress?: number
     onEdit?: () => void
     onDelete?: () => void
+    className?: string
 }
 
-function ContentPreview({ type, authorImageUrl, imageUrl, isUploading, label, progress, onEdit, onDelete }: Props) {
+function ContentPreview({ type, authorImageUrl, imageUrl, isUploading, label, progress, onEdit, onDelete, className }: Props) {
     const hoverRef = useRef(null!)
     const isHover = useHover(hoverRef)
     return (
-        <div ref={hoverRef} className="w-[260px] h-[390px] relative mb-12 bg-slate-800 rounded-2xl">
+        <div ref={hoverRef} className={`w-[260px] h-[390px] relative mb-12 bg-slate-800 rounded-2xl ${className}`}>
             <LazyImage src={imageUrl || '/errorAvatar.jpg'} alt="Ты не должен этого видеть. Перезалей картинку." width={260} height={390} className="object-cover h-full" imageClassName='rounded-xl' />
             {isUploading && typeof progress == 'number' && <div className='absolute top-0 w-full h-full bg-slate-900 bg-opacity-80 flex justify-center items-center'><RadialProgress value={progress}>{progress}%</RadialProgress></div>}
             {authorImageUrl && <Avatar size={40} src={authorImageUrl || '/errorAvatar.jpg'} className='absolute right-[-16px] top-[-16px]' shape='circle' />}

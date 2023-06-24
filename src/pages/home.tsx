@@ -38,7 +38,7 @@ const GameField: NextPage = () => {
         <h1 style={{ fontFamily: shrikhand.style.fontFamily }} className={` text-lime-100 flex flex-col items-center justify-center text-8xl -mt-24`}>RFBW 3</h1>
         <h1 style={{ fontFamily: shrikhand.style.fontFamily }} className={` text-lime-100 flex flex-col items-center justify-center text-2xl mb-8 pe-2`}>Rice Fields Bizarre Wandering</h1>
         {
-          status === 'authenticated' && <div className="grid grid-cols-3 grid-rows-4 gap-4 grid-flow-col w-[46rem] h-[15rem] ">
+          status === 'authenticated' && me && <div className="grid grid-cols-3 grid-rows-4 gap-4 grid-flow-col w-[46rem] h-[15rem] ">
             <HomeButton w={1} h={4} href="/game" className="under-construction border-cyan-700 hover:border-cyan-700" disabled>
               <div className="flex flex-col items-center justify-center gap-1">
                 <GiIsland className="text-6xl" />

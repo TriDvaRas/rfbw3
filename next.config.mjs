@@ -16,10 +16,10 @@ const config = {
    *
    * @see https://github.com/vercel/next.js/issues/41980
    */
-  i18n: {
-    locales: ["en","ru"],
-    defaultLocale: "ru",
-  },
+  // i18n: {
+  //   locales: ["en","ru"],
+  //   defaultLocale: "ru",
+  // },
   experimental: {
     esmExternals: false, // THIS IS THE FLAG THAT MATTERS
   },

@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { PlayerProfileSchema, playerProfileSchema } from "./me";
 import { zodResolver } from "@hookform/resolvers/zod";
+import PlayerPreview from "../components/util/PlayerPreview";
 
 const GameField: NextPage = () => {
   const utils = api.useContext()
@@ -150,12 +151,7 @@ const GameField: NextPage = () => {
                 <h1 className="text-5xl font-bold">Регистрация</h1>
                 <h3 className="text-2xl font-bold mt-1 mb-5">Создание профиля игрока</h3>
                 {/* <p className="py-6 -mt-1">Хуй.</p> */}
-                <div className="relative">
-                  <Avatar size={256} shape={'circle'} letters={getNameInitials(name)} src={imageUrl} className="text-7xl" />
-                  {isUploading && <div className='absolute top-0 mask mask-circle w-full h-full bg-slate-900 bg-opacity-80 flex justify-center items-center'><RadialProgress value={progress}>{progress}%</RadialProgress></div>}
-                </div>
-                <h3 className="text-3xl font-bold mt-2 mb-0">{name}</h3>
-                <h5 className="text-lg font-thin mt-0 mb-5">{motto}</h5>
+                <PlayerPreview motto={motto} name={name} imageUrl={imageUrl||'/errorAvatar.jpg'} isUploading={isUploading} progress={progress} />
                 <Form className="" onSubmit={playerForm.handleSubmit((data) => {
                   mutateMyPlayer(data, {
                     onSuccess() {
