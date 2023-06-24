@@ -122,7 +122,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         return (
           <div className={`${imgClasses} ${imageClassName}`} style={customImgDimension}>
             {
-              loadState == 0 && <Image quality={40} src={src} alt={''} width={20} height={20} className={`mask mask-circle blur`}
+              loadState == 0 && <Image quality={40} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle blur`}
                 onLoadingComplete={(e) => {
                   const containerMult = 1
                   const naturalMult = e.naturalWidth / e.naturalHeight

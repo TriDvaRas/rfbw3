@@ -23,7 +23,7 @@ function LazyImage({ height, src, width, className, alt,imageClassName }: Props)
 
     return <div style={customImgDimension} className={`flex ${className} `}>
         {
-            imageLoadedState == 0 && <NextImage quality={40} src={src} alt={alt} width={20} height={20} className={`min-w-full min-h-full object-cover blur ${imageClassName}`}
+            imageLoadedState == 0 && <NextImage quality={40} src={src} alt={alt} width={_width} height={_height} className={`min-w-full min-h-full object-cover blur ${imageClassName}`}
                 onLoadingComplete={(e) => {
                     const containerMult = width / height
                     const naturalMult = e.naturalWidth / e.naturalHeight
