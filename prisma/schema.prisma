@@ -82,8 +82,12 @@ model Tile {
     createdAt DateTime @default(now()) @db.Timestamptz(6)
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-    location    String       @id @unique @default("0,0")
-    connectedTo String[]     @default([])
+    location    String   @id @unique @default("0,0")
+    connectedTo String[] @default([])
+    windows     String[]
+    robots      String[]
+    buildings   String[]
+
     playerTiles PlayerTile[]
 }
 
@@ -265,7 +269,7 @@ model ContentDLC {
     position     Int     @default(0)
 
     contentId String  @db.Uuid
-    content   Content @relation(fields: [contentId], references: [id])
+    content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 }
 
 enum ContentGenre {
