@@ -33,7 +33,7 @@ function ContentPreview({ type, authorImageUrl, imageUrl, isUploading, label, pr
             {
                 typeof approved == 'boolean' && (
                     approved ?
-                    <div className={`indicator-item badge badge-secondary text-lg indicator-center `} >Approved</div > :
+                        <div className={`indicator-item badge badge-secondary text-lg indicator-center `} >Approved</div > :
                         <div className={`indicator-item badge badge-error text-lg indicator-center `} >Not Approved</div >
                 )
             }
