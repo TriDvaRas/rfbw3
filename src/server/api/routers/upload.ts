@@ -32,7 +32,7 @@ export const uploadRouter = createTRPCRouter({
         Bucket: env.S3_BUCKET,
         Key,
         Conditions: [
-          ['content-length-range', 0, 16 * 1024 * 1024], // max size 16MB, adjust as needed
+          ['content-length-range', 0, 4 * 1024 * 1024], // max size 4MB, adjust as needed
           ['eq', '$Content-Type', input.mimeType],
           ['starts-with', '$key', `rfbw/${ctx.session.user.name}/`],
           { acl: 'public-read' },

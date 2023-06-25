@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {},
   },
-  safelist:[
+  safelist: [
     {
       pattern: /(col|row)-span-.+/
     },
@@ -39,5 +39,8 @@ export default {
       },
     ],
   },
-  plugins: [require('daisyui')],
+  plugins: [
+    require('daisyui'),
+    require('@tailwindcss/typography')
+  ],
 } satisfies Config;

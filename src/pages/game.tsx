@@ -16,7 +16,7 @@ const GameField: NextPage = () => {
         <GameCanvas />
 
 
-        <Link href={'/home'} className="absolute left-4 top-4">
+        <Link href={'/home'} className="fixed left-4 top-4">
           <Button color="secondary" shape="circle">
             <AiFillHome className="text-xl"/>
           </Button>

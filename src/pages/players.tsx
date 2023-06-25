@@ -11,8 +11,8 @@ import PlayerPreview from "../components/util/PlayerPreview";
 import ContentPreview from "../components/previews/ContentPreview";
 import PlayerContentListPreview from "../components/previews/PlayerContentListPreview";
 const PlayersList: NextPage = () => {
-  const { data, fetchNextPage } = api.players.getAllPlayersWithContent.useInfiniteQuery({
-    limit: 1,
+  const { data, fetchNextPage, isInitialLoading } = api.players.getAllPlayersWithContent.useInfiniteQuery({
+    limit: 3,
   }, {
     getNextPageParam: (lastPage) => lastPage.nextCursor
   })
@@ -20,13 +20,13 @@ const PlayersList: NextPage = () => {
   const lastPage = data?.pages[data.pages.length - 1]
   const ref = useRef<HTMLDivElement>(null!)
   const entry = useIntersectionObserver(ref, {
-
+    threshold: 1
   })
   useEffect(() => {
-    if (entry?.isIntersecting && lastPage?.nextCursor) {
+    if (entry?.isIntersecting && lastPage?.nextCursor && !isInitialLoading) {
       fetchNextPage()
     }
-  }, [entry, fetchNextPage, lastPage])
+  }, [entry?.isIntersecting, fetchNextPage, isInitialLoading, lastPage?.nextCursor])
 
   console.log(entry?.isIntersecting, lastPage?.nextCursor);
 
@@ -53,18 +53,18 @@ const PlayersList: NextPage = () => {
 
                 </div>
               </div>)}
-              {/* Player list extender */}
-              <div ref={ref}> {lastPage?.nextCursor && <GridLoader color="rgb(8 51 68)" />}</div>
             </div>
           </div>
         </div>
 
+        {/* Player list extender */}
+        <div ref={ref}> {lastPage?.nextCursor && <GridLoader color="rgb(8 51 68)" />}</div>
 
 
 
 
 
-        <Link href={'/home'} className="absolute left-4 top-4">
+        <Link href={'/home'} className="fixed left-4 top-4">
           <Button color="secondary" shape="circle">
             <AiFillHome className="text-xl" />
           </Button>
