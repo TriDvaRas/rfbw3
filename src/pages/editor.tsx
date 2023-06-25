@@ -104,7 +104,7 @@ const Editor: NextPage = () => {
                 <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">
                   Игры
                   <Badge size="lg"
-                    color={games.length > 3 ? "secondary" : games.length > 0 ? "warning" : "error"}>
+                    color={games.length > 3 ? "secondary" : games.length > 2 ? "warning" : "error"}>
                     {games.length ?? <BounceLoader size={7} />}
                   </Badge>
                 </div>
@@ -118,7 +118,7 @@ const Editor: NextPage = () => {
                 <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">
                   Кино
                   <Badge size="lg"
-                    color={movies.length > 3 ? "secondary" : movies.length > 0 ? "warning" : "error"}>
+                    color={movies.length > 3 ? "secondary" : movies.length > 2 ? "warning" : "error"}>
                     {movies.length ?? <BounceLoader size={7} />}
                   </Badge>
                 </div>
@@ -135,7 +135,7 @@ const Editor: NextPage = () => {
                 <div className="text-2xl text-center flex flex-row justify-center items-center gap-1">
                   Аниме
                   <Badge size="lg"
-                    color={animes.length > 3 ? "secondary" : animes.length > 0 ? "warning" : "error"}>
+                    color={animes.length > 3 ? "secondary" : animes.length > 2 ? "warning" : "error"}>
                     {animes.length ?? <BounceLoader size={7} />}
                   </Badge>
                 </div>
