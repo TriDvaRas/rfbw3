@@ -41,7 +41,7 @@ const PlayersList: NextPage = () => {
         <div className="container max-w-7xl ">
           <div className="my-4">
             <div className="flex flex-col items-center justify-center gap-1">
-              <div className="text-4xl text-center">Галерея Участников</div>
+              <div className="text-4xl text-center mb-4">Галерея Участников</div>
               {players.map((player, i) => <div key={i} className="flex flex-row gap-2 w-full ">
                 <div className="w-3/12 h-[380px]">
                   <PlayerPreview className="mt-2" motto={player.about} name={player.name} imageUrl={player.imageUrl as string} />

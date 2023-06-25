@@ -36,7 +36,7 @@ function PlayerContentListPreview({ content }: Props) {
             onMouseMove={drag}
         >
             {
-                content.map((content, i) => <ContentPreview key={i} className="scale-75 -my-8 m" label={content.label} type={content.type} imageUrl={content.imageId} />)
+                content.map((content, i) => <ContentPreview key={i} approved={content.approved} className="scale-75 -my-8 m" label={content.label} type={content.type} imageUrl={content.imageId} />)
             }
         </div>
     )
