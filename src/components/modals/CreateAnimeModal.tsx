@@ -93,6 +93,7 @@ const CreateAnimeModal: React.FC<Props> = (props) => {
   const { fullname, imageURL, label, comments, genres, hours, dlcs } = animeData
 
   const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
+    imageMinResolution:[320, 480],
     onSuccess(url) {
       setAnimeValue('imageURL', url)
       triggerAnime('imageURL')

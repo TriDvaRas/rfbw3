@@ -50,6 +50,7 @@ const GameField: NextPage = () => {
   }, [player, initialFormStateHydrated, playerForm])
 
   const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
+    imageMinResolution:[320, 480],
     onSuccess(url) {
       playerForm.setValue('imageUrl', url)
       playerForm.trigger('imageUrl')

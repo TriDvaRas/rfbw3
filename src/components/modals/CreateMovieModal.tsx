@@ -92,6 +92,7 @@ const CreateMovieModal: React.FC<Props> = (props) => {
   const { fullname, imageURL, label, comments, genres, hours, dlcs } = movieData
 
   const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
+    imageMinResolution:[320, 480],
     onSuccess(url) {
       setMovieValue('imageURL', url)
       triggerMovie('imageURL')

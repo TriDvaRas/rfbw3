@@ -65,6 +65,7 @@ const EditGameModal: React.FC<Props> = (props) => {
   const { fullname, imageURL, label, comments, genres, hours, dlcs } = gameData
 
   const { startUpload, isUploading, error: uploadError, progress } = useFileUpload({
+    imageMinResolution:[320, 480],
     onSuccess(url) {
       setGameValue('imageURL', url)
       triggerGame('imageURL')
