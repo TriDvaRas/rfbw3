@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 // const dayColor = new THREE.Color(1.0, 1.0, 1.0);
 // const nightColor = new THREE.Color(0.25, 0.25, 0.6);
-const SUN_DISTANCE = 300;
+const SUN_DISTANCE = 100;
 const sunLightColors = new Gradient()
     .setColorGradient('#FFD760', '#FFFFFF', '#FFD760')
     .setMidpoint(150)

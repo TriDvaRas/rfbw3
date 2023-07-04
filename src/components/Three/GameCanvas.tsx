@@ -1,18 +1,21 @@
-import { Loader, OrbitControls, Stars, Stats } from "@react-three/drei";
+import { Loader, OrbitControls, Stars } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
-import useSWR from "swr";
 import Lights from "./GameField/Lights";
 import Sun from "./GameField/Sun";
-import { Tiles } from "./GameField/Tiles";
 import { WaterPlane } from "./GameField/WaterPlane";
 import { degreesToRadians } from "./util/util";
-import { MazeNode } from "../../server/extra/util/graph";
+import { api } from "../../utils/api";
+import { Tiles } from "./GameField/Tiles";
+import { HomeIsland } from "./Models/HomeIsland";
+import { SandPlane } from "./GameField/SandPlane";
+import { degToRad } from "three/src/math/MathUtils";
+import { useRef } from 'react';
 
 
 
 const GameCanvas = () => {
-  const { depth, rootY,rootX } = useControls({
+  const { depth, rootY, rootX } = useControls({
     depth: {
       value: 4,
       min: 1,
@@ -29,31 +32,36 @@ const GameCanvas = () => {
       step: 2,
     },
   })
-  const mazeRoot = {
-    x: `${rootX}`,
-    y: `${rootY}`,
-    depth: `${depth}`,
-  }
-  const { isLoading, error, data: paths } = useSWR<MazeNode[]>(`/api/extra/tiles?${new URLSearchParams(Object.entries(mazeRoot))}`, {
-    keepPreviousData: true,
-    fetcher: (url) => fetch(url).then((res) => res.json()),
-  })
-  // const { isLoading, error, data: paths } = useQuery<MazeNode[]>({
-  //   // suspense: true,
-  //   queryFn: () =>
-  //     fetch(`/api/extra/tiles?${new URLSearchParams(Object.entries({ ...mazeRoot, depth: `${depth}` }))}`).then(
-  //       (res) => res.json(),
-  //     ),
-  // })
   const { rot } = useControls({ rot: 30 })
+  const ref = useRef<any>(null!)
+  const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
+  const { data: myTiles } = api.fieldNodes.getMy.useQuery()
+
+  const mazeRoot: [number, number] = me?.fieldRoot.split(',').map(x => +x) as [number, number] || [0, 0]
+  console.log("Root", me?.fieldRoot, mazeRoot);
+
+  const { azimuthAngle, polarAngle } = useControls({
+    azimuthAngle: {
+      value: -120,
+      min: -180,
+      max: 180,
+      step: 1,
+    },
+    polarAngle: {
+      value: 40,
+      min: -180,
+      max: 180,
+      step: 1,
+    },
+  })
+
   return (
     <div className="min-h-screen min-w-full ">
       <Canvas className="min-h-screen min-w-full" style={{ height: '100vh' }} >
         {/* <Environment preset="forest"  /> */}
-        <group rotation={degreesToRadians([0, rot, 0])} position={[0, -0.5, 0]}>
-          {/* <Tiles tilesCoords={tilesCoords} /> */}
-        </group>
-        {paths && <Tiles nodes={paths} offset={[+mazeRoot.x, +mazeRoot.y]} />}
+
+        {myTiles && <Tiles playerTiles={myTiles} centerCoordinates={mazeRoot} />}
+        <HomeIsland />
         {/* <Cloud position={[0, -20, 0]}
           opacity={0.5}
           speed={0.01} // Rotation speed
@@ -63,13 +71,18 @@ const GameCanvas = () => {
           segments={240} // Number of particles
         /> */}
         <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <OrbitControls />
+        <OrbitControls ref={ref} makeDefault enableRotate={true} minPolarAngle={degToRad(polarAngle)} maxPolarAngle={degToRad(polarAngle)} onChange={() => {
+          ref.current.target.y = 0
+          ref.current.object.position.y = 4.6
+          console.log(ref.current.object);
+
+        }} zoomSpeed={0.1} minZoom={1} maxZoom={2} minAzimuthAngle={degToRad(azimuthAngle)} maxAzimuthAngle={degToRad(azimuthAngle)} />
         <Sun />
         {/* <Moon /> */}
         <Lights />
         <WaterPlane />
+        <SandPlane />
         <axesHelper scale={5} position={[0, 1.1, 0]} />
-        {/* <Grid infiniteGrid /> */}
         {/* <Stats  /> */}
       </Canvas>
       <Loader />

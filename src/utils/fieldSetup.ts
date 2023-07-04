@@ -1,25 +1,7 @@
 import { PlayerTileType } from "@prisma/client";
-import { prisma } from "../../db";
+import { prisma } from "../server/db";
 
-export async function setupPlayerFieldBase(playerId: string) {
-    const player = await prisma.player.findUniqueOrThrow({
-        where: {
-            id: playerId,
-        },
-    });
-
-    const [rootX, rootY] = player.fieldRoot.split(",").map((n) => parseInt(n, 10)) as [number, number];
-
-    const fieldNodes  = getDefaultPlayerNodes(rootX, rootY);
-    return await prisma.playerTile.createMany({
-        data: fieldNodes.map((node) => ({
-            playerId: playerId,
-            tileId: `${node.x},${node.y}`,
-            type: node.type,
-        }))
-    })
-}
-function getDefaultPlayerNodes(rootX: number, rootY: number) {
+export function getDefaultPlayerNodes(rootY: number, rootX: number) {
     const nodes: {
         x: number,
         y: number,
@@ -294,5 +276,11 @@ function getDefaultPlayerNodes(rootX: number, rootY: number) {
             ])
             break;
     }
+    //transpose everything because i'm stupid
+    nodes.forEach(node => {
+        const x = node.x
+        node.x = node.y
+        node.y = x
+    })
     return nodes
 }

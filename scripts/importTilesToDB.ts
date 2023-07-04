@@ -10,10 +10,13 @@ const data: {
     "buildings"?: string[],
     "robots"?: string[],
     "windows"?: string[]
-}[] = JSON.parse(fs.readFileSync("./scripts/tiles.json", "utf-8"));
+}[] = JSON.parse(fs.readFileSync("./scripts/rfbwmap.json", "utf-8"));
 
 async function main() {
-    await prisma.tile.deleteMany({});
+    // throw new Error("Fuse");
+    await prisma.tile.deleteMany({
+        
+    });
     await prisma.tile.createMany({
         data: data.map((tile) => {
             return {
