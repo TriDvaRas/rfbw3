@@ -20,19 +20,10 @@ const getMoonColor = (height: number): THREE.Color => {
 };
 
 const Moon: React.FC = () => {
-    // const lightRef = useRef<THREE.PointLight>(null!);
+    const lightRef = useRef<THREE.PointLight>(null!);
     const moonRef = useRef<THREE.Mesh>(null!);
 
-    useFrame(({ clock }) => {
-        const t = clock.getElapsedTime() / 2;
-        const radius = 30;
-        const y = Math.abs(Math.sin(t) * 15);
-        // lightRef.current.color = getMoonColor(Math.sin(t));
-        // lightRef.current.intensity = 0.4
-        moonRef.current.position.set(-Math.cos(t) * radius, y, -Math.sin(t) * radius);
-        // lightRef.current.position.set(-Math.cos(t) * radius, y, -Math.sin(t) * radius);
-    });
-    // useControls('Moon', {
+    // const { t, y, radius } = useControls('Moon', {
     //     visible: {
     //         value: true,
     //         onChange: (v) => {
@@ -52,14 +43,31 @@ const Moon: React.FC = () => {
     //             lightRef.current.intensity = v
     //         },
     //     },
+    //     t: { value: 0, min: -7, max: 7, step: 0.1 },
+    //     y: { value: 0, min: -5, max: 10, step: 0.1 },
+    //     radius: { value: 20, min: 0, max: 200, step: 1 },
     // })
+    const { t, y, radius } = {
+        t: 1,
+        y: 0,
+        radius: 30,
+    }
+    useFrame(({ clock }) => {
+        // const t = clock.getElapsedTime() / 2;
+        // const radius = 2;
+        // const y = -0.1;
+        // lightRef.current.color = getMoonColor(Math.sin(t));
+        // lightRef.current.intensity = 0.4
+        moonRef.current.position.set(-Math.cos(t) * radius, y, -Math.sin(t) * radius);
+        lightRef.current.position.set(-Math.cos(t) * radius, y, -Math.sin(t) * radius);
+    });
     return (
         <group>
-            {/* <pointLight ref={lightRef} castShadow visible={false} /> */}
-            <mesh ref={moonRef}>
-                <torusKnotGeometry args={[1, 0.1, 96, 100]} />
+            <pointLight ref={lightRef} castShadow visible color={'#cfc96d'} position={[-Math.cos(t) * radius, y, -Math.sin(t) * radius]} intensity={0.7}/>
+            <mesh ref={moonRef} position={[-Math.cos(t) * radius, y, -Math.sin(t) * radius]} >
+                <torusKnotGeometry args={[1, 0.4, 96, 100]} />
                 {/* <sphereGeometry args={[1, 32, 32]} /> */}
-                <meshBasicMaterial color="#5f4848" />
+                <meshPhongMaterial color="#5f4848" />
             </mesh>
         </group>
     );

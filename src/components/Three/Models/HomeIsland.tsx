@@ -8,6 +8,7 @@ import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { degreesToRadians } from '../util/util'
+import { useControls } from 'leva'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -20,9 +21,10 @@ type GLTFResult = GLTF & {
 
 export function HomeIsland(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/HomeIsland-transformed.glb') as GLTFResult
+  const { rot } = useControls({ rot: { step: 1, value: 30, }, })
   return (
-    <group {...props} dispose={null} scale={0.06} rotation={degreesToRadians([0,40,0])} position={[0.55,-0.09,-0.3]}>
-      <mesh geometry={nodes.Island.geometry} material={materials.Mat} />
+    <group {...props} dispose={null} scale={0.06} rotation={degreesToRadians([0, rot, 0])} position={[0.55, -0.09, -0.3]} castShadow>
+      <mesh geometry={nodes.Island.geometry} material={materials.Mat}  />
     </group>
   )
 }

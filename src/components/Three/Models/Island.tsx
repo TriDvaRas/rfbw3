@@ -21,16 +21,16 @@ type GLTFResult = GLTF & {
 
 
 const grassMaterials = {
-  green: new THREE.MeshStandardMaterial({
+  green: new THREE.MeshPhongMaterial({
     color: "#4dff00",
   }),
-  red: new THREE.MeshStandardMaterial({
+  red: new THREE.MeshPhongMaterial({
     color: "#ff0000",
   }),
-  blue: new THREE.MeshStandardMaterial({
+  blue: new THREE.MeshPhongMaterial({
     color: "#0000ff",
   }),
-  yellow: new THREE.MeshStandardMaterial({
+  yellow: new THREE.MeshPhongMaterial({
     color: "#ffff00",
   }),
 

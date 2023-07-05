@@ -29,12 +29,12 @@ const Sun: React.FC = () => {
     useFrame(({ clock }) => {
         // const t = clock.getElapsedTime() / 3;
         const radius = SUN_DISTANCE;
-        const y = Math.sin(t) * SUN_DISTANCE / 2;
+        // const y = Math.sin(t) * SUN_DISTANCE / 5;
+        const y = 1.2;
         // lightRef.current.color = getSunColor(Math.sin(t));
         // lightRef.current.intensity = Math.max((Math.sin(t)), 0.0) * 1.0;
         sunRef.current.position.set(Math.cos(t) * radius, y, Math.sin(t) * radius);
         lightRef.current.position.set(Math.cos(t) * radius, y, Math.sin(t) * radius);
-
         skyRef.current.material.uniforms.sunPosition.value = new THREE.Vector3(Math.cos(t) * radius, -y, Math.sin(t) * radius);
     });
     useControls('Sun', {

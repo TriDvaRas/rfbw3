@@ -1,4 +1,4 @@
-import { Loader, OrbitControls, Stars } from "@react-three/drei";
+import { Loader, OrbitControls, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
 import Lights from "./GameField/Lights";
@@ -11,8 +11,11 @@ import { HomeIsland } from "./Models/HomeIsland";
 import { SandPlane } from "./GameField/SandPlane";
 import { degToRad } from "three/src/math/MathUtils";
 import { useRef } from 'react';
+import Moon from "./GameField/Moon";
+import { useLocalStorage } from "usehooks-ts";
+import PlayerSphere from "./GameField/PlayerSphere";
 
-
+const DEFAULT_CAMERA_HEIGHT = 15
 
 const GameCanvas = () => {
   const { depth, rootY, rootX } = useControls({
@@ -36,10 +39,8 @@ const GameCanvas = () => {
   const ref = useRef<any>(null!)
   const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
   const { data: myTiles } = api.fieldNodes.getMy.useQuery()
-
+  const [cameraHeight, setCameraHeight] = useLocalStorage('cameraHeight', DEFAULT_CAMERA_HEIGHT)
   const mazeRoot: [number, number] = me?.fieldRoot.split(',').map(x => +x) as [number, number] || [0, 0]
-  console.log("Root", me?.fieldRoot, mazeRoot);
-
   const { azimuthAngle, polarAngle } = useControls({
     azimuthAngle: {
       value: -120,
@@ -54,12 +55,21 @@ const GameCanvas = () => {
       step: 1,
     },
   })
-
+  
   return (
     <div className="min-h-screen min-w-full ">
-      <Canvas className="min-h-screen min-w-full" style={{ height: '100vh' }} >
+      <Canvas className="min-h-screen min-w-full"
+        shadows
+        camera={{ position: [0, cameraHeight, 0], fov: 60, near: 0.1, far: 1000 }}
+        style={{ height: '100vh' }}
+        onWheel={(e) => {
+          //increase or decrease camera height
+          const y = Math.min(Math.max(3, cameraHeight + e.deltaY / 100), 12)
+          setCameraHeight(y)
+          ref.current.object.position.y = cameraHeight
+        }}>
         {/* <Environment preset="forest"  /> */}
-
+        <PlayerSphere />
         {myTiles && <Tiles playerTiles={myTiles} centerCoordinates={mazeRoot} />}
         <HomeIsland />
         {/* <Cloud position={[0, -20, 0]}
@@ -71,19 +81,17 @@ const GameCanvas = () => {
           segments={240} // Number of particles
         /> */}
         <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <OrbitControls ref={ref} makeDefault enableRotate={true} minPolarAngle={degToRad(polarAngle)} maxPolarAngle={degToRad(polarAngle)} onChange={() => {
+        <OrbitControls ref={ref} makeDefault enableRotate={true} enableZoom={false} minPolarAngle={degToRad(polarAngle)} maxPolarAngle={degToRad(polarAngle)} onChange={() => {
           ref.current.target.y = 0
-          ref.current.object.position.y = 4.6
-          console.log(ref.current.object);
-
+          ref.current.object.position.y = cameraHeight
         }} zoomSpeed={0.1} minZoom={1} maxZoom={2} minAzimuthAngle={degToRad(azimuthAngle)} maxAzimuthAngle={degToRad(azimuthAngle)} />
         <Sun />
-        {/* <Moon /> */}
+        <Moon />
         <Lights />
         <WaterPlane />
         <SandPlane />
         <axesHelper scale={5} position={[0, 1.1, 0]} />
-        {/* <Stats  /> */}
+        <Stats />
       </Canvas>
       <Loader />
     </div >

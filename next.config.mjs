@@ -20,9 +20,6 @@ const config = {
   //   locales: ["en","ru"],
   //   defaultLocale: "ru",
   // },
-  experimental: {
-    esmExternals: false, // THIS IS THE FLAG THAT MATTERS
-  },
   images: {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 3600 * 7,
