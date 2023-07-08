@@ -7,6 +7,7 @@ import * as THREE from 'three'
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { useControls } from 'leva'
 type GLTFResult = GLTF & {
   nodes: {
     ['GrassPlatform_Cylinder001-Mesh']: THREE.Mesh
@@ -20,30 +21,45 @@ type GLTFResult = GLTF & {
 
 
 
+
 const grassMaterials = {
-  green: new THREE.MeshPhongMaterial({
-    color: "#4dff00",
+  default: new THREE.MeshPhongMaterial({
+    color: "#ffb9d8",
   }),
-  red: new THREE.MeshPhongMaterial({
+  border: new THREE.MeshPhongMaterial({
     color: "#ff0000",
   }),
-  blue: new THREE.MeshPhongMaterial({
-    color: "#0000ff",
+  start: new THREE.MeshPhongMaterial({
+    color: "#00ff00",
   }),
-  yellow: new THREE.MeshPhongMaterial({
-    color: "#ffff00",
+  unmarked: new THREE.MeshPhongMaterial({
+    color: "#b8e6df",
   }),
-
+  anime: new THREE.MeshPhongMaterial({
+    color: "#ffabf7",
+  }),
+  game: new THREE.MeshPhongMaterial({
+    color: "#99ff73",
+  }),
+  movie: new THREE.MeshPhongMaterial({
+    color: "#ffec73",
+  }),
 }
-
 
 
 
 export function Island(props: JSX.IntrinsicElements['group'] & { color: keyof typeof grassMaterials }) {
   const { nodes, materials } = useGLTF('/Grass Platform-transformed.glb') as GLTFResult
+  const { grassColor } = useControls("Island", { grassColor: `#${grassMaterials.movie.color.getHexString()}` })
+  // const GrassMaterial = new THREE.MeshPhongMaterial({
+  //   color: grassColor ?? "#ff99c3",
+  // })
+
+  grassMaterials.movie.color.set(grassColor)
   return (
     <group {...props} dispose={null} >
       <mesh geometry={nodes['GrassPlatform_Cylinder001-Mesh'].geometry} material={materials.Dirt} />
+      {/* <mesh geometry={nodes['GrassPlatform_Cylinder001-Mesh_1'].geometry} material={GrassMaterial} /> */}
       <mesh geometry={nodes['GrassPlatform_Cylinder001-Mesh_1'].geometry} material={grassMaterials[props.color]} />
     </group>
   )

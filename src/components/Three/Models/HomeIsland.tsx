@@ -21,10 +21,10 @@ type GLTFResult = GLTF & {
 
 export function HomeIsland(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/HomeIsland-transformed.glb') as GLTFResult
-  const { rot } = useControls({ rot: { step: 1, value: 30, }, })
+  // const { rot, x, z } = useControls("HomeIsland", { rot: { step: 1, value: 30, }, x: { step: 0.01, value: 0.55, }, z: { step: 0.01, value: -0.3, }, })
   return (
-    <group {...props} dispose={null} scale={0.06} rotation={degreesToRadians([0, rot, 0])} position={[0.55, -0.09, -0.3]} castShadow>
-      <mesh geometry={nodes.Island.geometry} material={materials.Mat}  />
+    <group {...props} dispose={null} scale={0.06} rotation={degreesToRadians([0, 26, 0])} position={[0.53, -0.09, -0.47]} castShadow>
+      <mesh geometry={nodes.Island.geometry} material={materials.Mat} />
     </group>
   )
 }

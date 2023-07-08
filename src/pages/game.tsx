@@ -13,10 +13,13 @@ const GameField: NextPage = () => {
   const { status } = useSession()
   const router = useRouter()
   const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
+  const ctx = api.useContext()
 
   const { mutate: createMyPlayerInitialFields, isLoading } = api.fieldNodes.createPlayerInitialTiles.useMutation({
     onSuccess: () => {
       toast.success('Success!')
+      ctx.fieldNodes.getMy.invalidate()
+      ctx.players.getMyPlayer.invalidate()
     },
     onError: (err) => {
       toast.error(err.message)

@@ -1,4 +1,4 @@
-import { PlayerTileType } from "@prisma/client";
+import { ContentType, PlayerTileType } from "@prisma/client";
 import { prisma } from "../server/db";
 
 export function getDefaultPlayerNodes(rootY: number, rootX: number) {
@@ -6,6 +6,8 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
         x: number,
         y: number,
         type: PlayerTileType
+        contentType?: ContentType,
+        hardConnections?: string[],
     }[] = [{
         x: rootX,
         y: rootY,
@@ -19,6 +21,12 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX,
                     y: rootY - 1,
                     type: PlayerTileType.start,
+                    contentType: ContentType.anime,
+                    hardConnections: [
+                        `${rootX - 1},${rootY - 2}`,
+                        `${rootX},${rootY - 2}`,
+                        `${rootX + 1},${rootY - 2}`,
+                    ]
                 },
                 {
                     x: rootX + 1,
@@ -29,6 +37,12 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX + 1,
                     y: rootY,
                     type: PlayerTileType.start,
+                    contentType: ContentType.game,
+                    hardConnections: [
+                        `${rootX + 2},${rootY}`,
+                        `${rootX + 2},${rootY + 1}`,
+                        `${rootX + 1},${rootY + 1}`,
+                    ]
                 },
                 {
                     x: rootX,
@@ -39,6 +53,12 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX - 1,
                     y: rootY,
                     type: PlayerTileType.start,
+                    contentType: ContentType.movie,
+                    hardConnections: [
+                        `${rootX - 1},${rootY + 1}`,
+                        `${rootX - 2},${rootY + 1}`,
+                        `${rootX - 2},${rootY}`,
+                    ]
                 },
                 {
                     x: rootX - 1,
@@ -52,11 +72,13 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX,
                     y: rootY - 2,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX},${rootY - 1}`],
                 },
                 {
                     x: rootX + 1,
                     y: rootY - 2,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX},${rootY - 1}`],
                 },
                 {
                     x: rootX + 2,
@@ -67,16 +89,19 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX + 2,
                     y: rootY,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX + 1},${rootY}`],
                 },
                 {
                     x: rootX + 2,
                     y: rootY + 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX + 1},${rootY}`],
                 },
                 {
                     x: rootX + 1,
                     y: rootY + 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX + 1},${rootY}`],
                 },
                 {
                     x: rootX,
@@ -87,16 +112,19 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX - 1,
                     y: rootY + 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX - 1},${rootY}`],
                 },
                 {
                     x: rootX - 2,
                     y: rootY + 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX - 1},${rootY}`],
                 },
                 {
                     x: rootX - 2,
                     y: rootY,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX - 1},${rootY}`],
                 },
                 {
                     x: rootX - 2,
@@ -107,6 +135,7 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX - 1,
                     y: rootY - 2,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX},${rootY - 1}`],
                 },
             ])
             //r3
@@ -150,6 +179,12 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX,
                     y: rootY - 1,
                     type: PlayerTileType.start,
+                    contentType: ContentType.anime,
+                    hardConnections: [
+                        `${rootX - 1},${rootY - 1}`,
+                        `${rootX},${rootY - 2}`,
+                        `${rootX + 1},${rootY - 1}`,
+                    ]
                 },
                 {
                     x: rootX + 1,
@@ -160,6 +195,12 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX + 1,
                     y: rootY + 1,
                     type: PlayerTileType.start,
+                    contentType: ContentType.game,
+                    hardConnections: [
+                        `${rootX + 2},${rootY}`,
+                        `${rootX + 2},${rootY + 1}`,
+                        `${rootX + 1},${rootY + 2}`,
+                    ]
                 },
                 {
                     x: rootX,
@@ -170,6 +211,12 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX - 1,
                     y: rootY + 1,
                     type: PlayerTileType.start,
+                    contentType: ContentType.movie,
+                    hardConnections: [
+                        `${rootX - 1},${rootY + 2}`,
+                        `${rootX - 2},${rootY + 1}`,
+                        `${rootX - 2},${rootY}`,
+                    ]
                 },
                 {
                     x: rootX - 1,
@@ -184,11 +231,13 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX,
                     y: rootY - 2,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX},${rootY - 1}`],
                 },
                 {
                     x: rootX + 1,
                     y: rootY - 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX},${rootY - 1}`],
                 },
                 {
                     x: rootX + 2,
@@ -199,16 +248,19 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX + 2,
                     y: rootY,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX + 1},${rootY + 1}`],
                 },
                 {
                     x: rootX + 2,
                     y: rootY + 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX + 1},${rootY + 1}`],
                 },
                 {
                     x: rootX + 1,
                     y: rootY + 2,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX + 1},${rootY + 1}`],
                 },
                 {
                     x: rootX,
@@ -219,16 +271,19 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX - 1,
                     y: rootY + 2,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX - 1},${rootY + 1}`],
                 },
                 {
                     x: rootX - 2,
                     y: rootY + 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX - 1},${rootY + 1}`],
                 },
                 {
                     x: rootX - 2,
                     y: rootY,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX - 1},${rootY + 1}`],
                 },
                 {
                     x: rootX - 2,
@@ -239,6 +294,7 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
                     x: rootX - 1,
                     y: rootY - 1,
                     type: PlayerTileType.field,
+                    hardConnections: [`${rootX},${rootY - 1}`],
                 },
             ])
             //r3
@@ -281,6 +337,12 @@ export function getDefaultPlayerNodes(rootY: number, rootX: number) {
         const x = node.x
         node.x = node.y
         node.y = x
+        if (node.hardConnections)
+            node.hardConnections = node.hardConnections.map(hc => {
+                const [x, y] = hc.split(',').map(n => parseInt(n))
+                return `${y},${x}`
+            })
+
     })
     return nodes
 }

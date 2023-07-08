@@ -21,10 +21,23 @@ export const fieldNodesRouter = createTRPCRouter({
         },
       });
       if (player.fieldRoot !== "0,0") {
-        throw new TRPCClientError("Player already has initial tiles");
+        await ctx.prisma.player.update({
+          where: {
+            id: player.id,
+          },
+          data: {
+            fieldRoot: "0,0",
+          },
+        });
+        await ctx.prisma.playerTile.deleteMany({
+          where: {
+            playerId: player.id,
+          }
+        })
+        // throw new TRPCClientError("Player already has initial tiles");
       }
       //generate root
-      const root = [_.random(72, 78), _.random(72, 78)] as const
+      const root = [_.random(36, 39) * 2, _.random(36, 39) * 2 + 1] as const
       // set players fieldRoot
       await prisma.player.update({
         where: {
@@ -35,13 +48,14 @@ export const fieldNodesRouter = createTRPCRouter({
         },
       });
       const nodes = getDefaultPlayerNodes(root[0], root[1]);
-      console.log(nodes);
-      
+
       return await prisma.playerTile.createMany({
         data: nodes.map((node) => ({
           playerId: player.id,
           tileId: `${node.x},${node.y}`,
           type: node.type,
+          hardConnectedTo: node.hardConnections || [],
+          allowsContentType: node.contentType,
         }))
       })
     });

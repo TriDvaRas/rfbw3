@@ -6,9 +6,9 @@ import {
   publicProcedure
 } from "~/server/api/trpc";
 import { playerProfileSchema } from "../../../pages/me";
+import { PlayerSphereType } from "@prisma/client";
 
 export const playersRouter = createTRPCRouter({
-
   getAllPlayersWithContent: publicProcedure.input(z.object({
     limit: z.number().min(1).max(100).nullish(),
     cursor: z.string().nullish(),
@@ -69,5 +69,16 @@ export const playersRouter = createTRPCRouter({
       },
     });
   }),
+  updateMyPlayerSphereType: playerProtectedProcedure.input(z.enum(Object.values(PlayerSphereType) as unknown as [string])).mutation(({ ctx, input }) => {
+    return ctx.prisma.player.update({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      data: {
+        sphereType: input as PlayerSphereType,
+      },
+    });
+  }),
+
 
 });

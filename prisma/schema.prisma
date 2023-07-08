@@ -113,12 +113,21 @@ model Player {
     points    Int     @default(0)
     money     Int     @default(0)
 
+    sphereType PlayerSphereType @default(sphere)
+
     playerTiles    PlayerTile[]
     playerContents PlayerContent[]
     coops          Coop[]
     coopInvites    CoopInvite[]
     addedContent   Content[]       @relation("AddedContent")
     ownedContent   Content[]       @relation("OwnedContent")
+}
+
+enum PlayerSphereType {
+    sphere
+    pyramid
+    octahedron
+    cube
 }
 
 model PlayerTile {
@@ -128,6 +137,8 @@ model PlayerTile {
 
     type            PlayerTileType
     hardConnectedTo String[]       @default([])
+    allowsContentType     ContentType?
+    
 
     playerId       String          @db.Uuid
     tileId         String
