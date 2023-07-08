@@ -6,7 +6,7 @@ import Sun from "./GameField/Sun";
 import { WaterPlane } from "./GameField/WaterPlane";
 import { degreesToRadians } from "./util/util";
 import { api } from "../../utils/api";
-import { FieldTiles } from "./GameField/FieldTiles";
+import { MyFieldTiles } from "./GameField/MyFieldTiles";
 import { HomeIsland } from "./Models/HomeIsland";
 import { SandPlane } from "./GameField/SandPlane";
 import { degToRad } from "three/src/math/MathUtils";
@@ -89,7 +89,7 @@ const GameCanvas = () => {
         {/* <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={fov} /> */}
         {/* <Environment preset="forest"  /> */}
         <PlayerSphere />
-        {myTiles && <FieldTiles playerTiles={myTiles} centerCoordinates={mazeRoot} />}
+        {myTiles && <MyFieldTiles playerTiles={myTiles} centerCoordinates={mazeRoot} />}
         <HomeIsland />
         {/* <Cloud position={[0, -20, 0]}
           opacity={0.5}
@@ -100,10 +100,18 @@ const GameCanvas = () => {
           segments={240} // Number of particles
         /> */}
         <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <OrbitControls ref={ref} makeDefault enableRotate={true} enableZoom={false} minPolarAngle={degToRad(polarAngle)} maxPolarAngle={degToRad(polarAngle)} onChange={() => {
+        <OrbitControls ref={ref} makeDefault 
+        enableRotate={true} 
+        enableZoom={false} 
+        minPolarAngle={degToRad(polarAngle)} 
+        maxPolarAngle={degToRad(polarAngle)} 
+        onChange={() => {
           ref.current.target.y = 0
           ref.current.object.position.y = cameraHeight
-        }} zoomSpeed={0.1} minZoom={1} maxZoom={2} minAzimuthAngle={degToRad(azimuthAngle)} maxAzimuthAngle={degToRad(azimuthAngle)} />
+        }} 
+        minAzimuthAngle={degToRad(azimuthAngle)} 
+        maxAzimuthAngle={degToRad(azimuthAngle)} 
+        />
         <Sun />
         <Moon />
         <Lights />
