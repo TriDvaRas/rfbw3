@@ -305,10 +305,10 @@ const EditGameModal: React.FC<Props> = (props) => {
                 progress={progress}
               />
               <div className="flex flex-row gap-5 justify-center items-center" >
-                <Avatar size={75} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar size={50} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar size={25} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
-                <Avatar size={10} border imageClassName="ring-pink-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={75} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={50} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={25} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
+                <Avatar size={10} border imageClassName="ring-green-600" src={imageURL || '/errorAvatar.jpg'} shape="circle" />
               </div>
               <Modal.Actions>
                 <Button color="secondary" disabled={isSaving} onClick={() => { resetForm(); props.onClose() }}>Отмена</Button>

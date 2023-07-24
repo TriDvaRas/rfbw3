@@ -1,47 +1,31 @@
-import { Loader, OrbitControls, PerspectiveCamera, Stars, Stats, useContextBridge } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Loader, OrbitControls, Stars, Stats } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { Bloom, EffectComposer, HueSaturation, Noise, Vignette } from '@react-three/postprocessing';
 import { useControls } from "leva";
+import { BlendFunction, KernelSize } from 'postprocessing';
+import { useRef } from 'react';
+import { degToRad } from "three/src/math/MathUtils";
+import { useLocalStorage } from "usehooks-ts";
+import { api } from "../../utils/api";
 import Lights from "./GameField/Lights";
+import Moon from "./GameField/Moon";
+import { MyFieldTiles } from "./GameField/MyFieldTiles";
+import PlayerSphere from "./GameField/PlayerSphere";
+import { SandPlane } from "./GameField/SandPlane";
 import Sun from "./GameField/Sun";
 import { WaterPlane } from "./GameField/WaterPlane";
-import { degreesToRadians } from "./util/util";
-import { api } from "../../utils/api";
-import { MyFieldTiles } from "./GameField/MyFieldTiles";
 import { HomeIsland } from "./Models/HomeIsland";
-import { SandPlane } from "./GameField/SandPlane";
-import { degToRad } from "three/src/math/MathUtils";
-import { useRef } from 'react';
-import Moon from "./GameField/Moon";
-import { useLocalStorage } from "usehooks-ts";
-import PlayerSphere from "./GameField/PlayerSphere";
-import { Bloom, Noise, Vignette, EffectComposer, HueSaturation } from '@react-three/postprocessing';
-import { BlendFunction, KernelSize } from 'postprocessing';
-import { set } from 'lodash';
-
+import { TreeStump } from "./Models/TreeStump";
+import { TileDetailsShowMode } from "../../types/common";
+import { Button, Swap } from "react-daisyui";
+import { AiFillHome } from "react-icons/ai";
+import { MdVisibilityOff, MdVisibility } from 'react-icons/md'
 const DEFAULT_CAMERA_HEIGHT = 15
 
 const GameCanvas = () => {
-  const { depth, rootY, rootX } = useControls({
-    depth: {
-      value: 4,
-      min: 1,
-      step: 1,
-    },
-    rootX: {
-      value: 48,
-      min: 2,
-      step: 2,
-    },
-    rootY: {
-      value: 48,
-      min: 2,
-      step: 2,
-    },
-  })
-  const { rot } = useControls({ rot: 30 })
   const ref = useRef<any>(null!)
   const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
-  const { data: myTiles } = api.fieldNodes.getMy.useQuery()
+  const { data: myTiles } = api.playerContent.getMy.useQuery()
   const [cameraHeight, setCameraHeight] = useLocalStorage('cameraHeight', DEFAULT_CAMERA_HEIGHT)
   const mazeRoot: [number, number] = me?.fieldRoot.split(',').map(x => +x) as [number, number] || [0, 0]
   const [zoom, setZoom] = useLocalStorage('fov', 1)
@@ -69,6 +53,8 @@ const GameCanvas = () => {
   //     step: 0.01,
   //   },
   // })
+  // const CanvasWithTRPC = api.withTRPC(() => )
+
   return (
     <div className="min-h-screen min-w-full ">
       <Canvas className="min-h-screen min-w-full"
@@ -86,43 +72,43 @@ const GameCanvas = () => {
           // canvasRef.current.camera.zoom = y
           // ref.current.object.position.y = cameraHeight
         }}>
-        {/* <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={fov} /> */}
-        {/* <Environment preset="forest"  /> */}
-        <PlayerSphere />
-        {myTiles && <MyFieldTiles playerTiles={myTiles} centerCoordinates={mazeRoot} />}
-        <HomeIsland />
-        {/* <Cloud position={[0, -20, 0]}
-          opacity={0.5}
-          speed={0.01} // Rotation speed
-          width={200} // Width of the full cloud
-          depthTest={true} // Disables the depthTest for the material, might be better for transparent objects
-          depth={1.5} // Z-dir depth
-          segments={240} // Number of particles
-        /> */}
-        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <OrbitControls ref={ref} makeDefault 
-        enableRotate={true} 
-        enableZoom={false} 
-        minPolarAngle={degToRad(polarAngle)} 
-        maxPolarAngle={degToRad(polarAngle)} 
-        onChange={() => {
-          ref.current.target.y = 0
-          ref.current.object.position.y = cameraHeight
-        }} 
-        minAzimuthAngle={degToRad(azimuthAngle)} 
-        maxAzimuthAngle={degToRad(azimuthAngle)} 
-        />
-        <Sun />
-        <Moon />
-        <Lights />
-        <WaterPlane />
-        <SandPlane />
-        {/* <axesHelper scale={5} position={[0, 1.1, 0]} /> */}
-        <Stats />
-
-
+        {/* <CanvasWithTRPC /> */}
+        <group>
+          {/* <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={fov} /> */}
+          {/* <Environment preset="forest"  /> */}
+          <PlayerSphere />
+          {myTiles && <MyFieldTiles playerTiles={myTiles} centerCoordinates={mazeRoot} />}
+          <HomeIsland />
+          {/* <Cloud position={[0, -20, 0]}
+              opacity={0.5}
+              speed={0.01} // Rotation speed
+              width={200} // Width of the full cloud
+              depthTest={true} // Disables the depthTest for the material, might be better for transparent objects
+              depth={1.5} // Z-dir depth
+              segments={240} // Number of particles
+            /> */}
+          <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+          <OrbitControls ref={ref} makeDefault
+            enableRotate={true}
+            enableZoom={false}
+            minPolarAngle={degToRad(polarAngle)}
+            maxPolarAngle={degToRad(polarAngle)}
+            onChange={() => {
+              ref.current.target.y = 0
+              ref.current.object.position.y = cameraHeight
+            }}
+            minAzimuthAngle={degToRad(azimuthAngle)}
+            maxAzimuthAngle={degToRad(azimuthAngle)}
+          />
+          <Sun />
+          <Moon />
+          <Lights />
+          <WaterPlane />
+          <SandPlane />
+          {/* <axesHelper scale={5} position={[0, 1.1, 0]} /> */}
+          <Stats />
+        </group>
         <EffectComposer>
-
           <Bloom
             blendFunction={BlendFunction.COLOR_DODGE} // blend mode
             kernelSize={KernelSize.SMALL} // kernel size

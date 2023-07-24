@@ -5,6 +5,7 @@ import LazyImage from '../util/LazyImage'
 import { useHover } from 'usehooks-ts'
 import { RiPencilFill } from 'react-icons/ri'
 import { MdDeleteForever } from 'react-icons/md'
+import { RxCheck, RxCross1 } from 'react-icons/rx'
 
 type Props = {
     type: 'game' | 'movie' | 'anime'
@@ -15,11 +16,13 @@ type Props = {
     progress?: number
     onEdit?: () => void
     onDelete?: () => void
+    onComplete?: () => void
+    onDrop?: () => void
     className?: string
     approved?: boolean
 }
 
-function ContentPreview({ type, authorImageUrl, imageUrl, isUploading, label, progress, onEdit, onDelete, className, approved }: Props) {
+function ContentPreview({ type, authorImageUrl, imageUrl, isUploading, label, progress, onEdit, onDelete, onComplete, onDrop, className, approved }: Props) {
     const hoverRef = useRef(null!)
     const isHover = useHover(hoverRef)
     return (
@@ -38,8 +41,11 @@ function ContentPreview({ type, authorImageUrl, imageUrl, isUploading, label, pr
                 )
             }
             <div className='absolute right-0 top-0 flex flex-col gap-2 m-1.5'>
-                {onEdit && isHover && <Button onClick={onEdit} shape='circle' className='' size='sm' color='info'><RiPencilFill className="text-slate-800 text-2xl" /></Button>}
-                {onDelete && isHover && <Button onClick={onDelete} shape='circle' className='' size='sm' color='error'><MdDeleteForever className="text-slate-800 text-2xl " /></Button>}
+                {onEdit && isHover && <Button onClick={(e) => { e.stopPropagation(); onEdit() }} shape='circle' className='' size='sm' color='info'><RiPencilFill className="text-slate-800 text-2xl" /></Button>}
+                {onDelete && isHover && <Button onClick={(e) => { e.stopPropagation(); onDelete() }} shape='circle' className='' size='sm' color='error'><MdDeleteForever className="text-slate-800 text-2xl " /></Button>}
+
+                {onComplete && isHover && <Button onClick={(e) => { e.stopPropagation(); onComplete() }} shape='circle' className='' size='md' color='success'><RxCheck className="text-slate-800 text-5xl " /></Button>}
+                {onDrop && isHover && <Button onClick={(e) => { e.stopPropagation(); onDrop() }} shape='circle' className='' size='md' color='error'><RxCross1 className="text-slate-800 text-4xl " /></Button>}
             </div>
         </div>
     )

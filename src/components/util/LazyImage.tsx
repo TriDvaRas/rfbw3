@@ -21,7 +21,7 @@ function LazyImage({ height, src, width, className, alt,imageClassName }: Props)
         setImageLoadedState(0)
     }, [src])
 
-    return <div style={customImgDimension} className={`flex ${className} `}>
+    return <div style={customImgDimension} className={`flex ${className}  bg-black bg-opacity-20`}>
         {
             imageLoadedState == 0 && <NextImage quality={20} src={src} alt={alt} width={_width} height={_height} className={`min-w-full min-h-full object-cover blur ${imageClassName}`}
                 onLoadingComplete={(e) => {

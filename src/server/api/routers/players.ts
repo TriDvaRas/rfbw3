@@ -42,7 +42,18 @@ export const playersRouter = createTRPCRouter({
       }
     });
   }),
-  getAll: protectedProcedure.query(({ ctx }) => {
+  getAllWithEntropy: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.player.findMany({
+      include: {
+        Entropy: {
+          select: {
+            entropy: true,
+          }
+        }
+      }
+    });
+  }),
+  getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.player.findMany();
   }),
   createMyPlayer: protectedProcedure.input(playerProfileSchema).mutation(({ ctx, input }) => {
@@ -79,6 +90,27 @@ export const playersRouter = createTRPCRouter({
       },
     });
   }),
-
+  getPlayerDetails: publicProcedure.input(z.string().uuid()).query(({ ctx, input }) => {
+    const player = ctx.prisma.player.findUnique({
+      where: {
+        id: input,
+      },
+      include: {
+        playerContents: {
+          where: {
+            status: 'inProgress'
+          },
+          include: {
+            content: {
+              include: {
+                DLCs: true,
+              }
+            },
+          }
+        },
+      },
+    });
+    return player;
+  }),
 
 });

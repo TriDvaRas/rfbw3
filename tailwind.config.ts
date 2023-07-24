@@ -6,7 +6,28 @@ import { type Config } from "tailwindcss";
 export default {
   content: ['node_modules/daisyui/dist/**/*.js', 'node_modules/react-daisyui/dist/**/*.js', "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      gridRow: {
+        'span-7': 'span 7 / span 7',
+        'span-8': 'span 8 / span 8',
+        'span-9': 'span 9 / span 9',
+        'span-10': 'span 10 / span 10',
+        'span-11': 'span 11 / span 11',
+        'span-12': 'span 12 / span 12',
+      },
+      aspectRatio: {
+        '4/3': '4 / 3',
+        '2/3': '2 / 3',
+      },
+      zIndex: {
+        '60': '60',
+        '70': '70',
+        '80': '80',
+        '90': '90',
+        '100': '100',
+        '99999': '99999',
+      },
+    },
   },
   safelist: [
     {
@@ -17,6 +38,9 @@ export default {
     },
     {
       pattern: /grow/
+    },
+    {
+      pattern: /w-1\/6/
     },
   ],
   daisyui: {

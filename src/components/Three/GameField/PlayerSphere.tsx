@@ -107,10 +107,6 @@ function _PlayerSphere(props: { imageUrl: string, sphereType: PlayerSphereType }
             <primitive attach="map" object={textures[geometry]} />
           </meshBasicMaterial >
         </mesh>
-        {/* <mesh scale={0.99} position={[0, 2, 0]} ref={ref1} rotation={defaultRotations[geometry] as unknown as Euler} onClick={() => setShowPopup(true)}>
-          {geometryConstructors[geometry]}
-          <meshBasicMaterial attach="material"  color={'#ffffff'}/>
-        </mesh> */}
       </Float>
     </>
   )

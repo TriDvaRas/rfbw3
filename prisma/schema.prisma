@@ -109,10 +109,16 @@ model Player {
     image    Image?  @relation(fields: [imageUrl], references: [url])
     user     User    @relation(fields: [userId], references: [id])
 
-    isRussian Boolean @default(false)
-    points    Int     @default(0)
-    money     Int     @default(0)
+    // stats
+    points     Int @default(0)
+    money      Int @default(0)
+    animeSlots Int @default(1)
+    movieSlots Int @default(1)
+    gameSlots  Int @default(1)
+    coopSlots  Int @default(2)
 
+    // settings
+    isRussian  Boolean          @default(false)
     sphereType PlayerSphereType @default(sphere)
 
     playerTiles    PlayerTile[]
@@ -121,6 +127,8 @@ model Player {
     coopInvites    CoopInvite[]
     addedContent   Content[]       @relation("AddedContent")
     ownedContent   Content[]       @relation("OwnedContent")
+    weightMods     WeightMods[]
+    Entropy        Entropy[]
 }
 
 enum PlayerSphereType {
@@ -135,16 +143,16 @@ model PlayerTile {
     createdAt DateTime @default(now()) @db.Timestamptz(6)
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-    type            PlayerTileType
-    hardConnectedTo String[]       @default([])
-    allowsContentType     ContentType?
-    
+    type              PlayerTileType
+    hardConnectedTo   String[]       @default([])
+    allowsContentType ContentType?
 
-    playerId       String          @db.Uuid
-    tileId         String
-    player         Player          @relation(fields: [playerId], references: [id])
-    tile           Tile            @relation(fields: [tileId], references: [location])
-    playerContents PlayerContent[]
+    playerId        String         @db.Uuid
+    tileId          String
+    playerContentId String?        @db.Uuid
+    player          Player         @relation(fields: [playerId], references: [id])
+    tile            Tile           @relation(fields: [tileId], references: [location])
+    playerContent   PlayerContent? @relation(fields: [playerContentId], references: [id])
 }
 
 enum PlayerTileType {
@@ -161,14 +169,14 @@ model PlayerContent {
     source PlayerContentSource
     status PlayerContentStatus
 
-    playerId     String      @db.Uuid
-    contentId    String      @db.Uuid
-    playerTileId String?     @db.Uuid
-    coopId       String?     @db.Uuid
-    player       Player      @relation(fields: [playerId], references: [id])
-    content      Content     @relation(fields: [contentId], references: [id])
-    playerTile   PlayerTile? @relation(fields: [playerTileId], references: [id])
-    coop         Coop?       @relation(fields: [coopId], references: [id])
+    playerId     String       @db.Uuid
+    contentId    String       @db.Uuid
+    playerTileId String?      @db.Uuid
+    coopId       String?      @db.Uuid
+    player       Player       @relation(fields: [playerId], references: [id])
+    content      Content      @relation(fields: [contentId], references: [id])
+    coop         Coop?        @relation(fields: [coopId], references: [id])
+    playerTiles  PlayerTile[]
 }
 
 enum PlayerContentSource {
@@ -180,6 +188,7 @@ enum PlayerContentStatus {
     inProgress
     completed
     dropped
+    rerolled
 }
 
 model Coop {
@@ -220,9 +229,10 @@ model Image {
     createdAt    DateTime     @default(now()) @db.Timestamptz(6)
     uploadStatus UploadStatus @default(PENDING)
 
-    addedBy   User     @relation(fields: [addedById], references: [id], onDelete: Cascade, onUpdate: NoAction)
+    addedBy   User      @relation(fields: [addedById], references: [id], onDelete: Cascade, onUpdate: NoAction)
     addedById String
     players   Player[]
+    contents  Content[]
 }
 
 enum UploadStatus {
@@ -247,19 +257,23 @@ model Content {
     hasCoop        Boolean        @default(false)
     maxCoopPlayers Int            @default(1)
     genres         ContentGenre[] @default([])
+    comments       String         @default("")
+
+    baseWeight Int @default(100)
 
     approved     Boolean @default(false)
     fixRequested Boolean @default(false)
     fixReason    String  @default("")
-    comments     String  @default("")
     endCondition String  @default("")
 
     addedBy Player @relation("AddedContent", fields: [addedById], references: [id])
     owner   Player @relation("OwnedContent", fields: [ownedById], references: [id])
+    image   Image  @relation(fields: [imageId], references: [url])
 
     playerContents PlayerContent[]
     coops          Coop[]
     DLCs           ContentDLC[]
+    weightMods     WeightMods[]
 }
 
 enum ContentType {
@@ -334,4 +348,52 @@ enum ContentGenre {
     western
     yaoi
     yuri
+}
+
+model WeightMods {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    contentId String        @db.Uuid
+    content   Content       @relation(fields: [contentId], references: [id], onDelete: Cascade)
+    type      WeightModType
+
+    name       String
+    multiplier Float  @default(1)
+
+    isValid      Boolean                 @default(true)
+    invalidateAt DateTime?               @db.Timestamptz(6)
+    invalidateOn WeightModInvalidateOn[] @default([])
+
+    playerId String? @db.Uuid
+    player   Player? @relation(fields: [playerId], references: [id], onDelete: Cascade)
+}
+
+enum WeightModType {
+    global
+    player
+}
+
+enum WeightModInvalidateOn {
+    contentRoll
+    contentDrop
+    contentComplete
+    contentDropOrComplete
+    contentReroll
+    contentRerollOrDrop
+    contentRerollOrComplete
+    contentRerollOrCompleteOrDrop
+    shopBuy
+}
+
+model Entropy {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    sourcePlayerId String @db.Uuid
+    sourcePlayer   Player @relation(fields: [sourcePlayerId], references: [id], onDelete: Cascade)
+
+    entropy Int @default(0)
 }
