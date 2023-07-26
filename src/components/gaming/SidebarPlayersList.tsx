@@ -21,15 +21,15 @@ import { showContentFullInfoModalAtom, contentFullInfoModalContentAtom } from '.
 function SidebarPlayersList({ }) {
     const { data: players, isLoading, error } = api.players.getAllWithEntropy.useQuery()
     if (isLoading)
-        return <div className=' bg-sky-950 backdrop-blur-sm bg-opacity-70 rounded-lg w-full h-full flex items-center justify-center overflow-auto'>
+        return <div className=' bg-sky-950 backdrop-blur-sm bg-opacity-70 rounded-2xl rounded-scollable-2xl w-full h-full flex items-center justify-center overflow-auto'>
             <GridLoader color="#36d7b7" />
         </div >
     return (
-        <div className=' bg-sky-950 backdrop-blur-sm bg-opacity-70 rounded-lg w-full h-full flex  justify-center overflow-auto'>
-            {/* <div className='text-xl text-center'>Игроки</div> */}
+        <div className=' bg-sky-950 backdrop-blur-sm bg-opacity-70  w-full h-full rounded-2xl rounded-scollable-2xl  justify-center overflow-auto'>
+            <div className='text-3xl text-center mt-1'>{'𝔼'}</div>
             {error && <div className='text-red-500 text-center text-xl'>{error.message}</div>}
             {players &&
-                <div className='flex flex-col w-full gap-1 relative my-2'>
+                <div className='flex flex-col w-full gap-1 relative mb-2'>
                     {_.orderBy([...players], 'points', 'desc')
                         .map((p, i, ps) => {
                             let plc = i
@@ -59,7 +59,7 @@ function PlayerCard({ player, place }: {
 }) {
     const [showPlayerDetails, setShowPlayerDetails] = useState(false)
 
-    return <div className="flex flex-col   bg-blue-950 bg-opacity-50 rounded-md mx-2 p-1">
+    return <div className="flex flex-col   bg-slate-950 bg-opacity-20 rounded-3xl mx-2 p-1">
         <div className="flex items-center gap-x-3   w-full  ">
             {/* <img className="h-16 w-16 rounded-full" src={player.imageUrl} alt="" /> */}
             {/* <img className="h-16 w-16 rounded-full" src={player.imageUrl} alt="" /> */}

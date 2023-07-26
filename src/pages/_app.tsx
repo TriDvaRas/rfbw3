@@ -30,7 +30,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <QueryClientProvider client={queryClient}>
           <Theme dataTheme="rfbw" className="bg-gradient-to-b from-slate-800 to-black">
             <Component {...pageProps} />
-            
+
             <GlobalModals />
 
             <ToastContainer

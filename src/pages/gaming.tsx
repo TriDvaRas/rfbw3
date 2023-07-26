@@ -55,7 +55,7 @@ const GameField: NextPage = () => {
 
         {/* SIDEBARS */}
         {/* LEFT */}
-        <div className={`fixed top-0 left-0 h-full z-40  transition-all duration-300 ${showLeftSidebar ? 'w-[340px]' : 'w-0'}`}>
+        <div className={`fixed top-0 h-full z-40  transition-all duration-300 w-[340px] ${showLeftSidebar ? 'left-0' : 'left-[-340px]'}`}>
           {/* outer buttons */}
           <div className="relative left-full flex flex-col gap-1 p-2 mt-2">
             <Link href={'/home'} className="z-50">
@@ -71,7 +71,7 @@ const GameField: NextPage = () => {
             </Button>
           </div>
         </div>
-        <div className={`fixed top-0 left-0  h-screen max-h-full gap-2 ps-2 py-2 z-40 overflow-hidden transition-all duration-300 flex flex-col ${showLeftSidebar ? 'w-[340px]' : 'w-0'}`}>
+        <div className={`fixed top-0 h-screen max-h-full gap-2 ps-2 py-2 z-40 overflow-hidden transition-all duration-300 flex flex-col w-[340px] ${showLeftSidebar ? 'left-0' : 'left-[-340px]'}`}>
           {/* inner Content */}
           <div className="flex-6 flex-grow h-0">
             <SidebarPlayersList />

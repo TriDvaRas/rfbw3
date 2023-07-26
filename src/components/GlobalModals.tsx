@@ -10,28 +10,50 @@ import Avatar from './util/Avatar';
 import { api } from '../utils/api';
 import { Popover } from 'react-tiny-popover';
 import { useHover } from 'usehooks-ts';
+import { GridLoader } from 'react-spinners';
 
 // type Props = {}
-
+//! GLOBAL MODALS
 function GlobalModals({ }) {
     const [showContentFullInfo, setShowContentFullInfo] = useAtom(showContentFullInfoModalAtom)
-    const [content, setContent] = useAtom(contentFullInfoModalContentAtom)
+    const [contentFullContent, setContentFullContent] = useAtom(contentFullInfoModalContentAtom)
     return (
         <div>
             {/* CONTENT FULL INFO */}
-            <Modal
-                // open={true}
-                open={showContentFullInfo}
-                className='w-11/12 max-w-2xl'
-                onClickBackdrop={() => setShowContentFullInfo(false)}
-            >
-                <Modal.Body>
-                    {content && <ContentInfo content={content} />}
-                </Modal.Body>
-            </Modal>
+            {contentFullContent &&
+                <ContentFullInfoModal
+                    contentId={contentFullContent.id}
+                    show={showContentFullInfo}
+                    onClickBackdrop={() => setShowContentFullInfo(false)}
+                />
+            }
 
         </div>
     )
+}
+//! ---
+
+function ContentFullInfoModal({ contentId, show, onClickBackdrop }: {
+    contentId: string
+    show: boolean
+    onClickBackdrop: () => void
+}) {
+    const { data: content, isLoading, error } = api.content.getContentWithDLCs.useQuery(contentId)
+  
+    return <Modal
+        // open={true}
+        open={show}
+        className='w-11/12 max-w-2xl'
+        onClickBackdrop={onClickBackdrop}
+    >
+        <Modal.Body>
+            {isLoading && <div className='flex items-center justify-center h-20'>
+                <GridLoader color="#36d7b7" />
+            </div>}
+            {error && <div className='flex items-center justify-center h-20'><div className='text-red-500 text-center text-xl'>{error.message}</div></div>}
+            {content && content.DLCs !== undefined && <ContentInfo content={content} />}
+        </Modal.Body>
+    </Modal>
 }
 
 function ContentInfo({ content }: {

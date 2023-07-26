@@ -8,9 +8,7 @@ export const newContentOpenPopupTileIdAtom = atom<string | null>(null);
 
 
 export const showContentFullInfoModalAtom = atom(false);
-export const contentFullInfoModalContentAtom = atom<(Content & {
-    DLCs: ContentDLC[];
-}) | null>(null);
+export const contentFullInfoModalContentAtom = atom<(Content) | null>(null);
 
 export const showPlayerContentCompleteModalAtom = atom(false);
 export const playerContentCompleteModalContentAtom = atom<(PlayerContent & {
@@ -20,7 +18,7 @@ export const playerContentCompleteModalContentAtom = atom<(PlayerContent & {
 }) | null>(null);
 
 export const showPlayerContentDropModalAtom = atom(false);
-export const playerContentFinishDropContentAtom = atom<(PlayerContent & {
+export const playerContentDropContentAtom = atom<(PlayerContent & {
     content: Content & {
         DLCs: ContentDLC[];
     };

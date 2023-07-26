@@ -2,7 +2,8 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   playerProtectedProcedure,
-  protectedProcedure
+  protectedProcedure,
+  publicProcedure
 } from "~/server/api/trpc";
 import { gameFormSchema } from "../../../components/modals/CreateGameModal";
 import { movieFormSchema } from "../../../components/modals/CreateMovieModal";
@@ -186,6 +187,16 @@ export const contentRouter = createTRPCRouter({
     return ctx.prisma.content.delete({
       where: {
         id: input
+      }
+    });
+  }),
+  getContentWithDLCs: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    return await ctx.prisma.content.findUnique({
+      where: {
+        id: input
+      },
+      include: {
+        DLCs: true,
       }
     });
   }),

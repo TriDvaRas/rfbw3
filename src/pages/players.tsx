@@ -28,8 +28,6 @@ const PlayersList: NextPage = () => {
     }
   }, [entry?.isIntersecting, fetchNextPage, isInitialLoading, lastPage?.nextCursor])
 
-  console.log(entry?.isIntersecting, lastPage?.nextCursor);
-
 
   return (
     <>
