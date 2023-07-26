@@ -83,7 +83,7 @@ function PlayerCard({ player, place }: {
                     <GiAbstract064 title='Энтропия' className='text-purple-500 drop-shadow' />
                 </p>
             </div>
-            <div className=''>
+            <div className='-ms-12'>
                 <Button shape='circle' size='md' color='ghost' onClick={() => setShowPlayerDetails(!showPlayerDetails)}>
                     <label className={`swap ${showPlayerDetails ? 'swap-active' : ''} `}>
                         <div className="swap-on"><MdOutlineExpandLess className='text-3xl' /></div>

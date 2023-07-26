@@ -7,6 +7,7 @@ export async function submitContentFinishFeed(prisma: PrismaClient, params: {
     status: Omit<PlayerContentStatus, 'inProgress'>,
     pointsDelta?: number
     moneyDelta?: number
+    entropyDelta?: number
     player?: Player
     content?: Content
 }) {
@@ -29,6 +30,7 @@ export async function submitContentFinishFeed(prisma: PrismaClient, params: {
                     altText: `${player?.name} завершил контент ${content?.label}`,
                     pointsDelta: params.pointsDelta,
                     moneyDelta: params.moneyDelta,
+                    entropyDelta: params.entropyDelta,
                     sourcePlayerId: playerId,
                     targetContentId: contentId,
                 }
@@ -40,6 +42,7 @@ export async function submitContentFinishFeed(prisma: PrismaClient, params: {
                     altText: `${player?.name} дропнул контент ${content?.label}`,
                     pointsDelta: params.pointsDelta,
                     moneyDelta: params.moneyDelta,
+                    entropyDelta: params.entropyDelta,
                     sourcePlayerId: playerId,
                     targetContentId: contentId,
                 }
@@ -51,6 +54,7 @@ export async function submitContentFinishFeed(prisma: PrismaClient, params: {
                     altText: `${player?.name} реролльнул контент ${content?.label}`,
                     pointsDelta: params.pointsDelta,
                     moneyDelta: params.moneyDelta,
+                    entropyDelta: params.entropyDelta,
                     sourcePlayerId: playerId,
                     targetContentId: contentId,
                 }
@@ -62,6 +66,7 @@ export async function submitContentFinishFeed(prisma: PrismaClient, params: {
                     altText: `Неверный тип события submitContentFinishFeed:${status}`,
                     pointsDelta: params.pointsDelta,
                     moneyDelta: params.moneyDelta,
+                    entropyDelta: params.entropyDelta,
                     sourcePlayerId: playerId,
                     targetContentId: contentId,
                 }

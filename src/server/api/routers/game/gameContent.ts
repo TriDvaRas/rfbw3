@@ -5,7 +5,10 @@ import {
   createTRPCRouter, playerProtectedProcedure
 } from "~/server/api/trpc";
 import { selectWeightedContent } from "../../../../utils/random";
-import { getSelfContentMultiplier } from "../../../../utils/entropy";
+import { addNewEntropy, getEntropyGainMultiplier, getMoneyGainMultiplier, getSelfContentMultiplier } from "../../../../utils/entropy";
+import { submitContentFinishFeed, submitContentRollResultFeed } from "../../../../utils/feed";
+import _ from "lodash";
+import { incrementPlayerMoney, incrementPlayerPoints } from "../../../../utils/points";
 
 
 export const gameContentRouter = createTRPCRouter({
@@ -106,6 +109,12 @@ export const gameContentRouter = createTRPCRouter({
           allowsContentType: input.type,
         }
       })
+      await submitContentRollResultFeed(ctx.prisma, {
+        playerId: ctx.player.id,
+        contentId: rolledContent.id,
+        content: pContent.content,
+        player: ctx.player,
+      })
       return pContent;
     });
   }),
@@ -169,19 +178,29 @@ export const gameContentRouter = createTRPCRouter({
           type: 'field',
         }))
       })
-      //add points to player based on content.hours 
-      if (input.type !== 'rerolled') {
+      const pointsDelta = input.type == 'rerolled' ? 0 : Math.round(+pTile.playerContent.content.hours * (input.type == 'completed' ? 10 : -5))
+      const moneyDelta = Math.round(+pTile.playerContent.content.hours * (input.type == 'completed' ? await getMoneyGainMultiplier() : 0))
+      const entropyDelta = Math.round((input.type == 'completed' ? _.random(1, 3) : _.random(2, 5)) * (await getEntropyGainMultiplier()))
+      // add/subtract points to player based on pointsDelta 
+      if (pointsDelta !== 0)
+        await incrementPlayerPoints(ctx.player.id, pointsDelta)
+      // add/subtract money to player based on moneyDelta
+      if (moneyDelta !== 0)
+        await incrementPlayerMoney(ctx.player.id, moneyDelta)
+      // add entropy to game
+      if (entropyDelta !== 0)
+        await addNewEntropy(entropyDelta, ctx.player.id, input.type == 'completed' ? 'contentFinished' : input.type == 'rerolled' ? 'contentRerolled' : 'contentDropped')
 
-      }
-      await prisma.player.update({
-        where: {
-          id: ctx.player.id,
-        },
-        data: {
-          points: {
-            increment: +pTile.playerContent.content.hours * (input.type == 'completed' ? 10 : -5)
-          }
-        }
+
+      await submitContentFinishFeed(ctx.prisma, {
+        playerId: ctx.player.id,
+        contentId: pTile.playerContent.contentId,
+        status: input.type,
+        player: ctx.player,
+        content: pTile.playerContent.content,
+        pointsDelta,
+        moneyDelta,
+        entropyDelta,
       })
       return null
     })

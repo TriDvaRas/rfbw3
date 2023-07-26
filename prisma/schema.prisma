@@ -404,7 +404,15 @@ model Entropy {
     sourcePlayerId String @db.Uuid
     sourcePlayer   Player @relation(fields: [sourcePlayerId], references: [id], onDelete: Cascade)
 
-    entropy Int @default(0)
+    reason  EntropyReason
+    entropy Int           @default(0)
+}
+
+enum EntropyReason {
+    contentFinished
+    contentDropped
+    contentRerolled
+    pipeDrop
 }
 
 //event feed
@@ -414,10 +422,10 @@ model Event {
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
     type    EventType
-    altText String 
+    altText String
 
-    pointsDelta Int?
-    moneyDelta  Int?
+    pointsDelta  Int?
+    moneyDelta   Int?
     entropyDelta Int?
 
     sourcePlayerId String? @db.Uuid
@@ -440,7 +448,7 @@ enum EventType {
     contentFinished
     contentRerolled
     contentDropped
-    
+
     // coop progress
     coopCreated
     coopJoin
