@@ -109,6 +109,9 @@ model Player {
     image    Image?  @relation(fields: [imageUrl], references: [url])
     user     User    @relation(fields: [userId], references: [id])
 
+    //misc 
+    canDoGaming Boolean @default(false)
+
     // stats
     points     Int @default(0)
     money      Int @default(0)
@@ -121,14 +124,16 @@ model Player {
     isRussian  Boolean          @default(false)
     sphereType PlayerSphereType @default(sphere)
 
-    playerTiles    PlayerTile[]
-    playerContents PlayerContent[]
-    coops          Coop[]
-    coopInvites    CoopInvite[]
-    addedContent   Content[]       @relation("AddedContent")
-    ownedContent   Content[]       @relation("OwnedContent")
-    weightMods     WeightMods[]
-    Entropy        Entropy[]
+    playerTiles     PlayerTile[]
+    playerContents  PlayerContent[]
+    coops           Coop[]
+    coopInvites     CoopInvite[]
+    addedContent    Content[]       @relation("AddedContent")
+    ownedContent    Content[]       @relation("OwnedContent")
+    weightMods      WeightMods[]
+    Entropy         Entropy[]
+    sourcingEvents  Event[]         @relation("eventSourcePlayer")
+    targetingEvents Event[]         @relation("eventTargetPlayer")
 }
 
 enum PlayerSphereType {
@@ -202,6 +207,7 @@ model Coop {
     owner               Player          @relation(fields: [ownerId], references: [id])
     coopInvites         CoopInvite[]
     childPlayerContents PlayerContent[]
+    events              Event[]
 }
 
 model CoopInvite {
@@ -274,6 +280,9 @@ model Content {
     coops          Coop[]
     DLCs           ContentDLC[]
     weightMods     WeightMods[]
+
+    sourcingEvents  Event[] @relation("eventSourceContent")
+    targetingEvents Event[] @relation("eventTargetContent")
 }
 
 enum ContentType {
@@ -396,4 +405,66 @@ model Entropy {
     sourcePlayer   Player @relation(fields: [sourcePlayerId], references: [id], onDelete: Cascade)
 
     entropy Int @default(0)
+}
+
+//event feed
+model Event {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+    type    EventType
+    altText String 
+
+    pointsDelta Int?
+    moneyDelta  Int?
+    entropyDelta Int?
+
+    sourcePlayerId String? @db.Uuid
+    sourcePlayer   Player? @relation("eventSourcePlayer", fields: [sourcePlayerId], references: [id], onDelete: Cascade)
+    targetPlayerId String? @db.Uuid
+    targetPlayer   Player? @relation("eventTargetPlayer", fields: [targetPlayerId], references: [id], onDelete: Cascade)
+
+    sourceContentId String?  @db.Uuid
+    sourceContent   Content? @relation("eventSourceContent", fields: [sourceContentId], references: [id], onDelete: Cascade)
+    targetContentId String?  @db.Uuid
+    targetContent   Content? @relation("eventTargetContent", fields: [targetContentId], references: [id], onDelete: Cascade)
+
+    coopId String? @db.Uuid
+    coop   Coop?   @relation(fields: [coopId], references: [id], onDelete: Cascade)
+}
+
+enum EventType {
+    // content progress
+    contentRolled
+    contentFinished
+    contentRerolled
+    contentDropped
+    
+    // coop progress
+    coopCreated
+    coopJoin
+    coopLeave
+    coopEnd
+
+    // shop
+    //TODO
+
+    // truth
+    //TODO
+
+    // achievements
+    //TODO
+
+    // items
+    //TODO
+
+    // admin
+    adminPointsAdded
+    adminMoneyAdded
+    adminPointsRemoved
+    adminMoneyRemoved
+
+    //misc
+    invalidEvent
 }

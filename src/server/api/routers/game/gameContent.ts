@@ -13,6 +13,8 @@ export const gameContentRouter = createTRPCRouter({
     type: z.enum(["game", "movie", "anime"]),
     playerTileId: z.string().uuid(),
   })).mutation(({ ctx, input }) => {
+    if (!ctx.player.canDoGaming)
+      throw new TRPCClientError("Я тебе запрещаю производить гейминг");
     return ctx.prisma.$transaction(async (prisma) => {
       const rolledContents = await prisma.playerContent.findMany({
         where: {
@@ -86,6 +88,13 @@ export const gameContentRouter = createTRPCRouter({
           playerId: ctx.player.id,
           contentId: rolledContent.id,
           status: 'inProgress',
+        },
+        include: {
+          content: {
+            include: {
+              DLCs: true,
+            }
+          },
         }
       })
       await prisma.playerTile.update({
@@ -105,6 +114,9 @@ export const gameContentRouter = createTRPCRouter({
     playerTileId: z.string().uuid(),
   })).mutation(({ ctx, input }) => {
     return ctx.prisma.$transaction(async (prisma) => {
+      if (!ctx.player.canDoGaming)
+        throw new TRPCClientError("Я тебе запрещаю производить гейминг");
+
       const pTile = await prisma.playerTile.findUnique({
         where: {
           id: input.playerTileId,

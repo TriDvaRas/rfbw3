@@ -31,9 +31,15 @@ function SidebarPlayersList({ }) {
             {players &&
                 <div className='flex flex-col w-full gap-1 relative my-2'>
                     {_.orderBy([...players], 'points', 'desc')
-                        .map((p, i) =>
-                            <PlayerCard key={p.id} player={p} place={i + 1} />
-                        )}
+                        .map((p, i, ps) => {
+                            let plc = i
+                            while (ps[plc - 1]) {
+                                if (ps[plc - 1]!.points == p.points)
+                                    plc--
+                                else break
+                            }
+                            return <PlayerCard key={p.id} player={p} place={plc + 1} />
+                        })}
                     <div className='text-center'>
                         #DHNWE
                     </div>

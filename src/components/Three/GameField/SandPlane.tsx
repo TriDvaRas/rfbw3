@@ -9,11 +9,11 @@ export const SandPlane = () => {
     //     displacementMap: '/perlin.jpg',
     //     // normalMap: '/perlin.jpg',
     // })
-    const { sandColor, opacity } = useControls({ sandColor: '#f4e7c2', opacity: 0.9 })
+    // const { sandColor, opacity } = useControls({ sandColor: '#f4e7c2', opacity: 0.9 })
     return (
-        <mesh scale={[2, 2, 1]} rotation={[-Math.PI / 2, 0, Math.PI]} receiveShadow position={[0,-0.5,0]}>
+        <mesh scale={[2, 2, 1]} rotation={[-Math.PI / 2, 0, Math.PI]} receiveShadow position={[0, -0.5, 0]}>
             <planeGeometry args={[100, 100, 100, 200]} />
-            <meshStandardMaterial displacementMap={displacementMap} flatShading color={sandColor} transparent opacity={opacity} />
+            <meshStandardMaterial displacementMap={displacementMap} flatShading color={'#f4e7c2'} transparent opacity={0.9} />
             {/* <MeshDistortMaterial ref={ref} speed={0.2} distort={0} >
                 <meshPhongMaterial color="#ff0000" opacity={0.1} transparent />
             </MeshDistortMaterial> */}

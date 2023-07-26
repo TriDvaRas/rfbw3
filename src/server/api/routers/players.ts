@@ -90,6 +90,14 @@ export const playersRouter = createTRPCRouter({
       },
     });
   }),
+  getPlayer: publicProcedure.input(z.string().uuid()).query(({ ctx, input }) => {
+    const player = ctx.prisma.player.findUnique({
+      where: {
+        id: input,
+      },
+    });
+    return player;
+  }),
   getPlayerDetails: publicProcedure.input(z.string().uuid()).query(({ ctx, input }) => {
     const player = ctx.prisma.player.findUnique({
       where: {

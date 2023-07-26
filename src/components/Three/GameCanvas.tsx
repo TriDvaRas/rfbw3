@@ -30,21 +30,22 @@ const GameCanvas = () => {
   const mazeRoot: [number, number] = me?.fieldRoot.split(',').map(x => +x) as [number, number] || [0, 0]
   const [zoom, setZoom] = useLocalStorage('fov', 1)
 
-  const { azimuthAngle, polarAngle } = useControls({
-    azimuthAngle: {
-      value: -120,
-      min: -180,
-      max: 180,
-      step: 1,
-    },
-    polarAngle: {
-      value: 40,
-      min: -180,
-      max: 180,
-      step: 1,
-    },
-  })
-
+  // const { azimuthAngle, polarAngle } = useControls({
+  //   azimuthAngle: {
+  //     value: -120,
+  //     min: -180,
+  //     max: 180,
+  //     step: 1,
+  //   },
+  //   polarAngle: {
+  //     value: 40,
+  //     min: -180,
+  //     max: 180,
+  //     step: 1,
+  //   },
+  // })
+  const polarAngle = 40
+  const azimuthAngle = -120
   // const {saturation} = useControls("effects", {
   //   saturation: {
   //     value: 0,

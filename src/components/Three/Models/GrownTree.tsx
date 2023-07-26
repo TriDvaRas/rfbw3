@@ -4,11 +4,9 @@ Command: npx gltfjsx@6.2.3 -T -t -o src/components/Three/Models/GrownTree.tsx ga
 This work is based on "Polygon Tree Pack" (https://sketchfab.com/3d-models/polygon-tree-pack-36dacc2aeacb4f9f94385f63b978c3ca) by StreakByte (https://sketchfab.com/StreakByte) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 */
 
-import * as THREE from 'three'
-import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
+import * as THREE from 'three'
 import { GLTF } from 'three-stdlib'
-import { useControls } from 'leva'
 
 type GLTFResult = GLTF & {
   nodes: {

@@ -50,12 +50,12 @@ const grassMaterials = {
 
 export function Island(props: JSX.IntrinsicElements['group'] & { color: keyof typeof grassMaterials }) {
   const { nodes, materials } = useGLTF('/Grass Platform-transformed.glb') as GLTFResult
-  const { grassColor } = useControls("Island", { grassColor: `#${grassMaterials.movie.color.getHexString()}` })
+  // const { grassColor } = useControls("Island", { grassColor: `#${grassMaterials.movie.color.getHexString()}` })
   // const GrassMaterial = new THREE.MeshPhongMaterial({
   //   color: grassColor ?? "#ff99c3",
   // })
 
-  grassMaterials.movie.color.set(grassColor)
+  grassMaterials.movie.color.set(`#${grassMaterials.movie.color.getHexString()}`)
   return (
     <group {...props} dispose={null} >
       <mesh geometry={nodes['GrassPlatform_Cylinder001-Mesh'].geometry} material={materials.Dirt} />

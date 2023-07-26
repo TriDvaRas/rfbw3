@@ -25,7 +25,8 @@ const Sun: React.FC = () => {
     const lightRef = useRef<THREE.PointLight>(null!);
     const sunRef = useRef<THREE.Mesh>(null!);
     const skyRef = useRef<any>(null!);
-    const { t } = useControls({ t: { value: 0.07, min: 0, max: 1, step: 0.01 } })
+    // const { t } = useControls({ t: { value: 0.07, min: 0, max: 1, step: 0.01 } })
+    const t = 0.07
     useFrame(({ clock }) => {
         // const t = clock.getElapsedTime() / 3;
         const radius = SUN_DISTANCE;
@@ -37,59 +38,59 @@ const Sun: React.FC = () => {
         lightRef.current.position.set(Math.cos(t) * radius, y, Math.sin(t) * radius);
         skyRef.current.material.uniforms.sunPosition.value = new THREE.Vector3(Math.cos(t) * radius, -y, Math.sin(t) * radius);
     });
-    useControls('Sun', {
-        visible: {
-            value: true,
-            onChange: (v) => {
-                lightRef.current.visible = v;
-                sunRef.current.visible = v;
-            }
-        },
-        color: {
-            value: 'white',
-            onChange: (v) => {
-                lightRef.current.color = new THREE.Color(v);
-            },
-        },
-        intensity: {
-            value: 1,
-            onChange: (v) => {
-                lightRef.current.intensity = v
-            },
-        },
-    })
-    useControls('Sky', {
-        mieCoefficient: {
-            value: 0.005,
-            onChange: (v) => {
-                skyRef.current.material.uniforms.mieCoefficient.value = v
-            }
-        },
-        mieDirectionalG: {
-            value: 0.8,
-            onChange: (v) => {
-                skyRef.current.material.uniforms.mieDirectionalG.value = v
-            }
-        },
-        rayleigh: {
-            value: 100,
-            onChange: (v) => {
-                skyRef.current.material.uniforms.rayleigh.value = v
-            }
-        },
-        turbidity: {
-            value: 10,
-            onChange: (v) => {
-                skyRef.current.material.uniforms.turbidity.value = v
-            }
-        },
-        // sunPosition: {
-        //     value: 'white',
-        //     onChange: (v) => {
-        //         skyRef.current.material.uniforms.sunPosition.value = new THREE.Vector3(v);
-        //     },
-        // },
-    })
+    // useControls('Sun', {
+    //     visible: {
+    //         value: true,
+    //         onChange: (v) => {
+    //             lightRef.current.visible = v;
+    //             sunRef.current.visible = v;
+    //         }
+    //     },
+    //     color: {
+    //         value: 'white',
+    //         onChange: (v) => {
+    //             lightRef.current.color = new THREE.Color(v);
+    //         },
+    //     },
+    //     intensity: {
+    //         value: 1,
+    //         onChange: (v) => {
+    //             lightRef.current.intensity = v
+    //         },
+    //     },
+    // })
+    // useControls('Sky', {
+    //     mieCoefficient: {
+    //         value: 0.005,
+    //         onChange: (v) => {
+    //             skyRef.current.material.uniforms.mieCoefficient.value = v
+    //         }
+    //     },
+    //     mieDirectionalG: {
+    //         value: 0.8,
+    //         onChange: (v) => {
+    //             skyRef.current.material.uniforms.mieDirectionalG.value = v
+    //         }
+    //     },
+    //     rayleigh: {
+    //         value: 100,
+    //         onChange: (v) => {
+    //             skyRef.current.material.uniforms.rayleigh.value = v
+    //         }
+    //     },
+    //     turbidity: {
+    //         value: 10,
+    //         onChange: (v) => {
+    //             skyRef.current.material.uniforms.turbidity.value = v
+    //         }
+    //     },
+    //     // sunPosition: {
+    //     //     value: 'white',
+    //     //     onChange: (v) => {
+    //     //         skyRef.current.material.uniforms.sunPosition.value = new THREE.Vector3(v);
+    //     //     },
+    //     // },
+    // })
 
     return (
         <group>

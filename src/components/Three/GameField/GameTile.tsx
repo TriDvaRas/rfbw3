@@ -73,7 +73,7 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
         onMutate: () => {
             setCanRollNewContent(false)
         },
-        onSuccess: () => {
+        onSuccess(data, variables, context) {
             toast.success('Контент завершен')
             Promise.all([
                 ctx.playerContent.getMy.invalidate(),
@@ -92,9 +92,10 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
         onMutate: () => {
             setCanRollNewContent(false)
         },
-        onSuccess: () => {
+        onSuccess: (data, variables, context) => {
             toast.success('Контент получен')
-            console.log('invalidate start');
+            setFullInfoModalContent(data.content)
+            setShowContentFullInfo(true)
             
             Promise.all([
                 ctx.playerContent.getMy.invalidate(),
@@ -102,8 +103,6 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
                 ctx.players.getAllWithEntropy.invalidate(),
             ]).then(() => {
                 setCanRollNewContent(true)
-                console.log('invalidate end');
-                
             })
         },
         onError: (err) => {
