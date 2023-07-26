@@ -13,6 +13,7 @@ import { TileDetailsShowMode } from "../types/common";
 import { useLocalStorage } from "usehooks-ts";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import SidebarPlayersList from "../components/gaming/SidebarPlayersList";
+import SidebarFeed from "../components/gaming/SibebarFeed";
 const GameField: NextPage = () => {
   const { status } = useSession()
   const router = useRouter()
@@ -70,13 +71,13 @@ const GameField: NextPage = () => {
             </Button>
           </div>
         </div>
-        <div className={`fixed top-0 left-0 h-screen max-h-full gap-1 ps-2 py-2 z-40 overflow-hidden transition-all duration-300 flex flex-col ${showLeftSidebar ? 'w-[340px]' : 'w-0'}`}>
+        <div className={`fixed top-0 left-0  h-screen max-h-full gap-2 ps-2 py-2 z-40 overflow-hidden transition-all duration-300 flex flex-col ${showLeftSidebar ? 'w-[340px]' : 'w-0'}`}>
           {/* inner Content */}
           <div className="flex-6 flex-grow h-0">
             <SidebarPlayersList />
           </div>
           <div className="flex-4 flex-grow h-0">
-            {/* <PlayersList /> */}
+            <SidebarFeed />
           </div>
 
 

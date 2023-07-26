@@ -79,6 +79,7 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
                 ctx.playerContent.getMy.invalidate(),
                 ctx.players.getPlayerDetails.invalidate(),
                 ctx.players.getAllWithEntropy.invalidate(),
+                ctx.game.feed.getFeed.invalidate(),
             ]).then(() => {
                 setCanRollNewContent(true)
             })
@@ -101,6 +102,7 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
                 ctx.playerContent.getMy.invalidate(),
                 ctx.players.getPlayerDetails.invalidate(),
                 ctx.players.getAllWithEntropy.invalidate(),
+                ctx.game.feed.getFeed.invalidate(),
             ]).then(() => {
                 setCanRollNewContent(true)
             })
