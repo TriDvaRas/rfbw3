@@ -7,6 +7,7 @@ import { contentRouter } from "./routers/content";
 import { rulesRouter } from "./routers/rules";
 import { gameContentRouter } from "./routers/game/gameContent";
 import { gameFeedRouter } from "./routers/game/gameFeed";
+import { metaRouter } from "./routers/meta";
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   content: contentRouter,
   upload: uploadRouter,
   rules: rulesRouter,
+  meta: metaRouter,
   game: createTRPCRouter({
     content: gameContentRouter,
     feed: gameFeedRouter,

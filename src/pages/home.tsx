@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { Shrikhand } from "next/font/google";
 import { FaUserEdit } from "react-icons/fa"
 import { api } from "../utils/api";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 const shrikhand = Shrikhand({
   style: ['normal'],
@@ -22,6 +23,7 @@ const GameField: NextPage = () => {
   const { status } = useSession()
   const router = useRouter()
   const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
+  const { data: amIAdmin } = api.meta.amIAdmin.useQuery()
   if (status === 'unauthenticated')
     router.push('/')
   if (status === 'loading' || meStatus === 'loading')
@@ -35,6 +37,11 @@ const GameField: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b ">
+        {amIAdmin && <Link href={'/admin'} className="fixed right-4 bottom-4">
+          <Button color="secondary" shape="circle" variant="outline">
+            <MdAdminPanelSettings className="text-2xl" />
+          </Button>
+        </Link>}
         <h1 style={{ fontFamily: shrikhand.style.fontFamily }} className={` text-lime-100 flex flex-col items-center justify-center text-8xl -mt-24`}>RFBW 3</h1>
         <h1 style={{ fontFamily: shrikhand.style.fontFamily }} className={` text-lime-100 flex flex-col items-center justify-center text-2xl mb-8 pe-2`}>Rice Fields Bizarre Wandering</h1>
         {
