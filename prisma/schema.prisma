@@ -174,6 +174,9 @@ model PlayerContent {
     source PlayerContentSource
     status PlayerContentStatus
 
+    finishedAt DateTime? @db.Timestamptz(6)
+    completedDLCIds String[] @default([])
+
     playerId     String       @db.Uuid
     contentId    String       @db.Uuid
     playerTileId String?      @db.Uuid

@@ -121,6 +121,7 @@ export const gameContentRouter = createTRPCRouter({
   completeContent: playerProtectedProcedure.input(z.object({
     type: z.enum(["dropped", "rerolled", "completed"]),
     playerTileId: z.string().uuid(),
+    DLCIds: z.array(z.string().uuid()).optional(),
   })).mutation(({ ctx, input }) => {
     return ctx.prisma.$transaction(async (prisma) => {
       if (!ctx.player.canDoGaming)
@@ -134,7 +135,11 @@ export const gameContentRouter = createTRPCRouter({
           tile: true,
           playerContent: {
             include: {
-              content: true,
+              content: {
+                include: {
+                  DLCs: true,
+                }
+              },
             }
           },
         }
@@ -178,8 +183,13 @@ export const gameContentRouter = createTRPCRouter({
           type: 'field',
         }))
       })
-      const pointsDelta = input.type == 'rerolled' ? 0 : Math.round(+pTile.playerContent.content.hours * (input.type == 'completed' ? 10 : -5))
-      const moneyDelta = Math.round(+pTile.playerContent.content.hours * (input.type == 'completed' ? await getMoneyGainMultiplier() : 0))
+      const selectedDLCs = (input.DLCIds ?? []).map(id => pTile.playerContent!.content.DLCs.find(x => x.id == id));
+      if (selectedDLCs.some(x => !x))
+        throw new TRPCClientError("Выбранно не существующее DLC :)");
+      const hours = (selectedDLCs.map(x=> +x!.hours).reduce((a, b) => a + b, +pTile.playerContent.content.hours));
+
+      const pointsDelta = input.type == 'rerolled' ? 0 : Math.round(+hours * (input.type == 'completed' ? 10 : -5))
+      const moneyDelta = Math.round(+hours * (input.type == 'completed' ? await getMoneyGainMultiplier() : 0))
       const entropyDelta = Math.round((input.type == 'completed' ? _.random(1, 3) : _.random(2, 5)) * (await getEntropyGainMultiplier()))
       // add/subtract points to player based on pointsDelta 
       if (pointsDelta !== 0)

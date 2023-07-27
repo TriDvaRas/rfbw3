@@ -226,7 +226,7 @@ function ContentFinishModal({ playerContent: pc, show, onClickBackdrop }: {
         endContent({
             playerTileId: pc.playerTileId!,
             type: 'completed',
-            //TODO DLCs
+            DLCIds: selectedDLCIds,
         })
     }
     const handleCompleteClick = () => {
