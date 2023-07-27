@@ -270,12 +270,15 @@ model Content {
     genres         ContentGenre[] @default([])
     comments       String         @default("")
 
-    baseWeight Int @default(100)
+    baseWeight   Int    @default(100)
+    endCondition String
 
-    approved     Boolean @default(false)
-    fixRequested Boolean @default(false)
-    fixReason    String  @default("")
-    endCondition String  @default("")
+    isApproved   Boolean @default(false)
+    qualityScore Int?
+
+    isDeclined      Boolean @default(false) @map("fixRequested")
+    declinedReason  String  @default("")
+    declinedCounter Int     @default(0)
 
     addedBy Player @relation("AddedContent", fields: [addedById], references: [id])
     owner   Player @relation("OwnedContent", fields: [ownedById], references: [id])
@@ -557,4 +560,3 @@ model ShopItemStock {
     playerId String? @db.Uuid
     player   Player? @relation(fields: [playerId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
-

@@ -8,6 +8,7 @@ import {
 import { gameFormSchema } from "../../../components/modals/CreateGameModal";
 import { movieFormSchema } from "../../../components/modals/CreateMovieModal";
 import { animeFormSchema } from "../../../components/modals/CreateAnimeModal";
+import { TRPCClientError } from "@trpc/client";
 
 
 export const contentRouter = createTRPCRouter({
@@ -95,6 +96,17 @@ export const contentRouter = createTRPCRouter({
     data: gameFormSchema
   })).mutation(({ ctx, input }) => {
     return ctx.prisma.$transaction(async (prisma) => {
+      const content = await ctx.prisma.content.findUnique({
+        where: {
+          id: input.id
+        }
+      })
+      if (!content)
+        throw new TRPCClientError("Контент не найден");
+      if (content.ownedById !== ctx.player.id)
+        throw new TRPCClientError("Контент не принадлежит тебе");
+      if (content.isApproved)
+        throw new TRPCClientError("Нельзя изменить аппрувнутый контент");
       // delete dlcs
       await prisma.contentDLC.deleteMany({
         where: {
@@ -116,6 +128,7 @@ export const contentRouter = createTRPCRouter({
           imageId: input.data.imageURL,
           genres: input.data.genres,
           comments: input.data.comments,
+          isDeclined: false,
           DLCs: {
             create: input.data.dlcs
           },
@@ -128,6 +141,17 @@ export const contentRouter = createTRPCRouter({
     data: movieFormSchema
   })).mutation(({ ctx, input }) => {
     return ctx.prisma.$transaction(async (prisma) => {
+      const content = await ctx.prisma.content.findUnique({
+        where: {
+          id: input.id
+        }
+      })
+      if (!content)
+        throw new TRPCClientError("Контент не найден");
+      if (content.ownedById !== ctx.player.id)
+        throw new TRPCClientError("Контент не принадлежит тебе");
+      if (content.isApproved)
+        throw new TRPCClientError("Нельзя изменить аппрувнутый контент");
       // delete dlcs
       await prisma.contentDLC.deleteMany({
         where: {
@@ -146,6 +170,7 @@ export const contentRouter = createTRPCRouter({
           imageId: input.data.imageURL,
           genres: input.data.genres,
           comments: input.data.comments,
+          isDeclined: false,
           DLCs: {
             create: input.data.dlcs
           },
@@ -158,6 +183,17 @@ export const contentRouter = createTRPCRouter({
     data: animeFormSchema
   })).mutation(({ ctx, input }) => {
     return ctx.prisma.$transaction(async (prisma) => {
+      const content = await ctx.prisma.content.findUnique({
+        where: {
+          id: input.id
+        }
+      })
+      if (!content)
+        throw new TRPCClientError("Контент не найден");
+      if (content.ownedById !== ctx.player.id)
+        throw new TRPCClientError("Контент не принадлежит тебе");
+      if (content.isApproved)
+        throw new TRPCClientError("Нельзя изменить аппрувнутый контент");
       // delete dlcs
       await prisma.contentDLC.deleteMany({
         where: {
@@ -176,6 +212,7 @@ export const contentRouter = createTRPCRouter({
           imageId: input.data.imageURL,
           genres: input.data.genres,
           comments: input.data.comments,
+          isDeclined: false,
           DLCs: {
             create: input.data.dlcs
           },
@@ -183,13 +220,25 @@ export const contentRouter = createTRPCRouter({
       });
     });
   }),
-  deleteContent: playerProtectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
+  deleteContent: playerProtectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    const content = await ctx.prisma.content.findUnique({
+      where: {
+        id: input
+      }
+    })
+    if (!content)
+      throw new TRPCClientError("Контент не найден");
+    if (content.ownedById !== ctx.player.id)
+      throw new TRPCClientError("Контент не принадлежит тебе");
+    if (content.isApproved)
+      throw new TRPCClientError("Нельзя удалить аппрувнутый контент");
     return ctx.prisma.content.delete({
       where: {
         id: input
       }
     });
   }),
+
   getContentWithDLCs: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     return await ctx.prisma.content.findUnique({
       where: {

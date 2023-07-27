@@ -20,3 +20,11 @@ export const playerContentFinishModalContentAtom = atom<(PlayerContent & {
 
 //* Truth Gallery Modal
 export const showTruthGalleryModalAtom = atom(false);
+
+
+//* ADMIN
+//*
+//* content approval
+export const showContentApprovalAssistantAtom = atom(false);
+export const contentApprovalAssistantNextContentIndexAtom = atom<number | undefined>(undefined);
+export const contentApprovalAssistantContentListAtom = atom<Content[]>([]);

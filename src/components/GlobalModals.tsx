@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai'
-import React from 'react'
-import { canRollNewContentAtom, contentFullInfoModalContentAtom, playerContentFinishModalContentAtom, showContentFullInfoModalAtom, showPlayerContentFinishModalAtom } from '../utils/atoms';
-import { Badge, Button, Modal } from 'react-daisyui';
+import React, { useState } from 'react'
+import { canRollNewContentAtom, contentFullInfoModalContentAtom, playerContentFinishModalContentAtom, showContentFullInfoModalAtom, showPlayerContentFinishModalAtom, contentApprovalAssistantNextContentIndexAtom, showContentApprovalAssistantAtom, contentApprovalAssistantContentListAtom } from '../utils/atoms';
+import { Badge, Button, Divider, Input, Modal } from 'react-daisyui';
 import { Content, ContentDLC, PlayerContent } from '@prisma/client';
 import ContentPreview from './previews/ContentPreview';
 import LazyImage from './util/LazyImage';
@@ -25,6 +25,8 @@ function GlobalModals({ }) {
     const [showContentFinishModal, setShowContentFinishModal] = useAtom(showPlayerContentFinishModalAtom)
     const [finishModalPlayerContent, setFinishModalPlayerContent] = useAtom(playerContentFinishModalContentAtom)
 
+    const [showApproveAssistant, setShowApproveAssistant] = useAtom(showContentApprovalAssistantAtom)
+
     return (
         <div>
             {/* CONTENT FULL INFO */}
@@ -42,7 +44,7 @@ function GlobalModals({ }) {
                     onClickBackdrop={() => setShowContentFinishModal(false)}
                 />
             }
-
+            {showApproveAssistant && <ApproveAssistant />}
         </div>
     )
 }
@@ -394,5 +396,91 @@ function ContentFinishModal({ playerContent: pc, show, onClickBackdrop }: {
 //! ---
 
 
+
+
+//* ADMIN
+//! approve assistant
+function ApproveAssistant() {
+    const [assistantNextContentIndex, setAssistantNextContentIndex] = useAtom(contentApprovalAssistantNextContentIndexAtom)
+    const [showApproveAssistant, setShowApproveAssistant] = useAtom(showContentApprovalAssistantAtom)
+    const [contentFullContent, setContentFullContent] = useAtom(contentFullInfoModalContentAtom)
+    const [showContentFullInfo, setShowContentFullInfo] = useAtom(showContentFullInfoModalAtom)
+    const [contentApprovalAssistantContentList, setContentApprovalAssistantContentList] = useAtom(contentApprovalAssistantContentListAtom)
+    const ctx = api.useContext()
+    const { mutate: approve, isLoading: isApproving } = api.admin.approveContent.useMutation({
+        onSuccess: (data) => {
+            if (data) {
+                toast.success('Successfully Approved')
+                switchToNextContent()
+                ctx.admin.getContentList.invalidate()
+            }
+        },
+        onError: (err) => {
+            toast.error(err.message)
+        }
+    })
+    const { mutate: decline, isLoading: isDeclining } = api.admin.declineContent.useMutation({
+        onSuccess: (data) => {
+            if (data) {
+                toast.success('Successfully Declined')
+                switchToNextContent()
+            }
+        },
+        onError: (err) => {
+            toast.error(err.message)
+        }
+    })
+
+    const [declineReason, setDeclineReason] = useState('')
+    const [approveScore, setApproveScore] = useState(0)
+    const switchToNextContent = () => {
+        setDeclineReason('')
+        setApproveScore(0)
+        if (assistantNextContentIndex && contentApprovalAssistantContentList[assistantNextContentIndex]) {
+            setShowApproveAssistant(true)
+            setAssistantNextContentIndex(assistantNextContentIndex + 1)
+            setContentFullContent(contentApprovalAssistantContentList[assistantNextContentIndex]!)
+        }
+        else {
+            setShowContentFullInfo(false)
+            setContentApprovalAssistantContentList([])
+            setShowApproveAssistant(false)
+        }
+    }
+    return <div className='z-1000 fixed w-screen bottom-0  bg-indigo-800 flex flex-row gap-1 justify-center items-center'>
+        <Button disabled={isDeclining || isApproving} onClick={() => {
+            setShowContentFullInfo(false)
+            setContentApprovalAssistantContentList([])
+            setShowApproveAssistant(false)
+        }}>Close Assistant</Button>
+
+        <div className="divider divider-horizontal">OR</div>
+
+        <Button disabled={isDeclining || isApproving} onClick={() => {
+            setDeclineReason('')
+            setApproveScore(0)
+            switchToNextContent()
+        }}>Skip</Button>
+
+        <div className="divider divider-horizontal">OR</div>
+
+        <Input className='w-[500px]' width={500} placeholder='Decline reason' value={declineReason} onChange={e => setDeclineReason(e.currentTarget.value)} />
+        <Button color='warning' disabled={declineReason == '' || isDeclining || isApproving} onClick={() => decline({
+            contentId: contentFullContent!.id,
+            declinedReason: declineReason,
+        })}>Decline</Button>
+
+        <div className="divider divider-horizontal">OR</div>
+
+        <div>Quality(1-100):</div>
+        <Input className='w-[120px]' type='number' min={1} max={100} value={approveScore} onChange={e => setApproveScore(+e.currentTarget.value)} />
+        <Button color='success' disabled={approveScore == 0 || isDeclining || isApproving} onClick={() => {
+            approve({
+                contentId: contentFullContent!.id,
+                qualityScore: approveScore,
+            })
+        }}>Approve</Button>
+    </div>
+}
 
 export default GlobalModals
