@@ -41,6 +41,18 @@ export const playerContentRouter = createTRPCRouter({
                 playerId: player.id,
               }
             })
+            await ctx.prisma.event.deleteMany({
+              where: {
+                OR:[
+                  {
+                    sourcePlayerId: player.id,
+                  },
+                  {
+                    targetPlayerId: player.id,
+                  }
+                ]
+              }
+            })
             break;
         }
       }

@@ -374,8 +374,8 @@ function ContentFinishModal({ playerContent: pc, show, onClickBackdrop }: {
                             <div className='flex-grow flex flex-col items-start justify-center w-full mb-2 px-2'>
                                 <div className='text-center w-full'>За окончание:</div>
                                 <ul>
-                                    <li className='flex items-center gap-0.5'><div>+</div>{(selectedDLCIds.map(id => +pc.content.DLCs.find(x => x.id == id)!.hours).reduce((a, b) => a + b, +pc.content.hours)) * 10}<GiPointyHat title='Очки' className='text-blue-400 drop-shadow' /></li>
-                                    <li className='flex items-center gap-0.5'><div>+</div>{(selectedDLCIds.map(id => +pc.content.DLCs.find(x => x.id == id)!.hours).reduce((a, b) => a + b, +pc.content.hours)) * 10}<LiaCoinsSolid title='Дублоны' className='text-yellow-500 drop-shadow' /></li>
+                                    <li className='flex items-center gap-0.5'><div>+</div>{Math.round((selectedDLCIds.map(id => +pc.content.DLCs.find(x => x.id == id)!.hours).reduce((a, b) => a + b, +pc.content.hours)) * 10)}<GiPointyHat title='Очки' className='text-blue-400 drop-shadow' /></li>
+                                    <li className='flex items-center gap-0.5'><div>+</div>{Math.round((selectedDLCIds.map(id => +pc.content.DLCs.find(x => x.id == id)!.hours).reduce((a, b) => a + b, +pc.content.hours)) * 10)}<LiaCoinsSolid title='Дублоны' className='text-yellow-500 drop-shadow' /></li>
                                     {/* <li className='flex items-center gap-0.5'><div>+HRS</div><Badge color='secondary' size='sm'>x10</Badge>Очков<GiPointyHat title='Очки' className='text-blue-400 drop-shadow' /></li>
                                 <li className='flex items-center gap-0.5'><div>+HRS</div><Badge color='secondary' size='sm'>x10</Badge>Дублонов<LiaCoinsSolid title='Дублоны' className='text-yellow-500 drop-shadow' /></li> */}
                                     <li className='flex items-center gap-0.5'><div>+</div>Немного <GiAbstract064 title='Энтропия' className='text-purple-500 drop-shadow' /></li>

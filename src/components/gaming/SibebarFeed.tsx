@@ -42,9 +42,12 @@ function SidebarFeed({ }) {
     return <div className=' bg-sky-950 backdrop-blur-sm bg-opacity-70 rounded-2xl rounded-scollable-2xl w-full h-full    p-2 overflow-auto'>
         <div className='text-3xl text-center -mt-1'>{'𝕏'}</div>
         {error && <div className='text-red-500 text-center text-xl'>{error.message}</div>}
-        <div className='flex flex-col gap-1 justify-center '>
-            {feed.map((item, i) => <FeedItem key={i} feedItem={item} />)}
-        </div>
+        {data && !isInitialLoading && feed.length == 0 ?
+            <div className='flex items-center justify-center mt-3'>Тут будет 🤤</div>
+            :
+            <div className='flex flex-col gap-1 justify-center '>
+                {feed.map((item, i) => <FeedItem key={i} feedItem={item} />)}
+            </div>}
         <div ref={ref}> {lastPage?.nextCursor && <GridLoader color="rgb(8 51 68)" />}</div>
     </div>
 }
@@ -76,16 +79,16 @@ function FeedItemLeft({ feedItem }: FeedItemProps) {
         case 'contentRerolled':
         case 'contentRolled':
             left = <Popover
-            containerClassName='z-50'
-            isOpen={isHovered}
-            positions={['top']}
-            padding={5}
-            content={<div className={`flex flex-col gap-1 px-2  text-center rounded-full  mx-1.5 text-slate-950 bg-info`}>
-               {feedItem.sourcePlayer!.name}
-            </div>}
-        >
-            <Avatar src={feedItem.sourcePlayer!.imageUrl} size={56} />
-        </Popover>
+                containerClassName='z-50'
+                isOpen={isHovered}
+                positions={['top']}
+                padding={5}
+                content={<div className={`flex flex-col gap-1 px-2  text-center rounded-full  mx-1.5 text-slate-950 bg-info`}>
+                    {feedItem.sourcePlayer!.name}
+                </div>}
+            >
+                <Avatar src={feedItem.sourcePlayer!.imageUrl} size={56} />
+            </Popover>
 
     }
     return <div ref={ref} className='flex '>
@@ -111,13 +114,13 @@ function FeedItemRight({ feedItem }: FeedItemProps) {
                 positions={['top']}
                 padding={5}
                 content={<div className={`flex flex-col gap-1 px-2  text-center rounded-full  mx-1.5 text-slate-100 ${feedItem.targetContent!.type == 'game' ? 'bg-green-500' : feedItem.targetContent!.type == 'movie' ? 'bg-amber-500' : 'bg-pink-500'}`}>
-                   {feedItem.targetContent!.label || 'ЯЙЦА'}
+                    {feedItem.targetContent!.label || 'ЯЙЦА'}
                 </div>}
             >
-                <Avatar src={feedItem.targetContent!.imageId} size={56} onClick={()=>{
+                <Avatar src={feedItem.targetContent!.imageId} size={56} onClick={() => {
                     setContent(feedItem.targetContent)
                     setShowContentFullInfo(true)
-                }}/>
+                }} />
             </Popover>
 
     }

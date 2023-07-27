@@ -18,3 +18,5 @@ export const playerContentFinishModalContentAtom = atom<(PlayerContent & {
 }) | null>(null);
 
 
+//* Truth Gallery Modal
+export const showTruthGalleryModalAtom = atom(false);

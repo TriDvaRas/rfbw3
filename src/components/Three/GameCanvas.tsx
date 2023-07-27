@@ -1,4 +1,4 @@
-import { Loader, OrbitControls, Stars, Stats } from "@react-three/drei";
+import { Loader, OrbitControls, Stars } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, HueSaturation, Noise, Vignette } from '@react-three/postprocessing';
 import { useControls } from "leva";
@@ -14,12 +14,8 @@ import PlayerSphere from "./GameField/PlayerSphere";
 import { SandPlane } from "./GameField/SandPlane";
 import Sun from "./GameField/Sun";
 import { WaterPlane } from "./GameField/WaterPlane";
+import { Book } from "./Models/Book";
 import { HomeIsland } from "./Models/HomeIsland";
-import { TreeStump } from "./Models/TreeStump";
-import { TileDetailsShowMode } from "../../types/common";
-import { Button, Swap } from "react-daisyui";
-import { AiFillHome } from "react-icons/ai";
-import { MdVisibilityOff, MdVisibility } from 'react-icons/md'
 const DEFAULT_CAMERA_HEIGHT = 15
 
 const GameCanvas = () => {
@@ -56,6 +52,17 @@ const GameCanvas = () => {
   // })
   // const CanvasWithTRPC = api.withTRPC(() => )
 
+  // useControls to change onject pos, scale and rotation
+  // const { x, y, z, rotX, rotY, rotZ, scale } = useControls("HomeIsland", {
+  //   x: { step: 0.01, value: 0.55, },
+  //   y: { step: 0.01, value: -0.09, },
+  //   z: { step: 0.01, value: -0.3, },
+  //   rotX: { step: 0.01, value: 0, },
+  //   rotY: { step: 0.01, value: 0, },
+  //   rotZ: { step: 0.01, value: 0, },
+  //   scale: { step: 0.01, value: 1, },
+  // })
+
   return (
     <div className="min-h-screen min-w-full ">
       <Canvas className="min-h-screen min-w-full"
@@ -63,22 +70,21 @@ const GameCanvas = () => {
         camera={{ position: [0, cameraHeight, 0], fov: 60, near: 0.1, far: 1000 }}
         style={{ height: '100vh' }}
         onWheel={(e) => {
-          //increase or decrease camera height
           const y = Math.min(Math.max(0.8, zoom - 0.1 * Math.sign(e.deltaY)), 3)
-          // console.log('y', y);
-          // console.log('ref.current', ref.current);
           ref.current.object.zoom = y
           setZoom(y)
-          // setCameraHeight(y)
-          // canvasRef.current.camera.zoom = y
-          // ref.current.object.position.y = cameraHeight
         }}>
-        {/* <CanvasWithTRPC /> */}
         <group>
-          {/* <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={fov} /> */}
-          {/* <Environment preset="forest"  /> */}
           <PlayerSphere />
           {myTiles && <MyFieldTiles playerTiles={myTiles} centerCoordinates={mazeRoot} />}
+          <Book
+            position={[0.70, 0.86, -0.60]}
+            rotation={[0.00, -2.61, -1.82]}
+            scale={[0.51, 0.51, 0.51]}
+            onClick={()=>{
+              console.log('book clicked');
+            }}
+          />
           <HomeIsland />
           {/* <Cloud position={[0, -20, 0]}
               opacity={0.5}
@@ -107,7 +113,7 @@ const GameCanvas = () => {
           <WaterPlane />
           <SandPlane />
           {/* <axesHelper scale={5} position={[0, 1.1, 0]} /> */}
-          <Stats />
+          {/* <Stats /> */}
         </group>
         <EffectComposer>
           <Bloom
