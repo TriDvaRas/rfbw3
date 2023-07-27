@@ -22,7 +22,7 @@ import { useThree } from '@react-three/fiber';
 import ContentPreview from '../../previews/ContentPreview';
 import { TileDetailsShowMode } from '../../../types/common';
 import { useAtom } from 'jotai';
-import { showContentFullInfoModalAtom, contentFullInfoModalContentAtom, canRollNewContentAtom, newContentOpenPopupTileIdAtom } from '../../../utils/atoms';
+import { showContentFullInfoModalAtom, contentFullInfoModalContentAtom, canRollNewContentAtom, newContentOpenPopupTileIdAtom, playerContentFinishModalContentAtom, showPlayerContentFinishModalAtom } from '../../../utils/atoms';
 import { PiChatTeardropFill, PiFlowerLotusFill } from 'react-icons/pi'
 import { BsFillCameraVideoFill, BsPlusCircleDotted } from 'react-icons/bs';
 import { ImVideoCamera } from 'react-icons/im';
@@ -55,8 +55,11 @@ type Props = {
 export default function GameTile({ playerTile, offset, position, connectedTo = [], freeSlots }: Props) {
     const [showContentFullInfo, setShowContentFullInfo] = useAtom(showContentFullInfoModalAtom)
     const [fullInfoModalContent, setFullInfoModalContent] = useAtom(contentFullInfoModalContentAtom)
+
     const [canRollNewContent, setCanRollNewContent] = useAtom(canRollNewContentAtom)
     const [newContentOpenPopupTileId, setNewContentOpenPopupTileId] = useAtom(newContentOpenPopupTileIdAtom)
+    const [showContentFinishModal, setShowContentFinishModal] = useAtom(showPlayerContentFinishModalAtom)
+    const [finishModalPlayerContent, setFinishModalPlayerContent] = useAtom(playerContentFinishModalContentAtom)
 
     const islandRef = useRef<THREE.Group>(null)
 
@@ -68,27 +71,6 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
     const allowedContent = _.compact(connectedTo.map(x => x.allowsContentType))
     const [tileDetailsShowMode, setTileDetailsShowMode] = useLocalStorage<TileDetailsShowMode>('tileDetailsShowMode', 'simple')
 
-    // const rerollUnlockTO = useRef<NodeJS.Timeout>(null)
-    const { mutate: endContent, isLoading: finishContentIsLoading } = api.game.content.completeContent.useMutation({
-        onMutate: () => {
-            setCanRollNewContent(false)
-        },
-        onSuccess(data, variables, context) {
-            toast.success('Контент завершен')
-            Promise.all([
-                ctx.playerContent.getMy.invalidate(),
-                ctx.players.getPlayerDetails.invalidate(),
-                ctx.players.getAllWithEntropy.invalidate(),
-                ctx.game.feed.getFeed.invalidate(),
-            ]).then(() => {
-                setCanRollNewContent(true)
-            })
-        },
-        onError: (err) => {
-            toast.error(err.message)
-            setCanRollNewContent(true)
-        }
-    })
     const { mutate: rollContent, isLoading } = api.game.content.rollNewContent.useMutation({
         onMutate: () => {
             setCanRollNewContent(false)
@@ -97,7 +79,7 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
             toast.success('Контент получен')
             setFullInfoModalContent(data.content)
             setShowContentFullInfo(true)
-            
+
             Promise.all([
                 ctx.playerContent.getMy.invalidate(),
                 ctx.players.getPlayerDetails.invalidate(),
@@ -212,26 +194,23 @@ export default function GameTile({ playerTile, offset, position, connectedTo = [
                 {/* content preview circle */}
                 <Html position={[0, 1.9, 0]} zIndexRange={[0, 0]} distanceFactor={3 * three.camera.zoom}>
                     {tileDetailsShowMode == 'full' ?
-                        <div className='fixed inset-0 rounded-full flex items-center justify-center bg-transparent bg-opacity-40 cursor-pointer'
-                            onClick={() => {
-                                if (playerTile.playerContent) {
-                                    setShowContentFullInfo(true)
-                                    setFullInfoModalContent(playerTile.playerContent.content)
-                                }
-                            }}>
+                        <div className='fixed inset-0 rounded-full flex items-center justify-center bg-transparent bg-opacity-40 '>
                             <ContentPreview label={playerTile.playerContent.content.label} type={playerTile.playerContent.content.type} imageUrl={playerTile.playerContent.content.imageId}
                                 onComplete={() => {
-                                    if (playerTile.playerContent)
-                                        endContent({ playerTileId: playerTile.id, type: 'completed' })
+                                    if (playerTile.playerContent) {
+                                        setFinishModalPlayerContent(playerTile.playerContent)
+                                        setShowContentFinishModal(true)
+                                    }
                                 }}
-                                onDrop={() => {
-                                    if (playerTile.playerContent)
-                                        endContent({ playerTileId: playerTile.id, type: 'dropped' })
-
+                                onInfo={() => {
+                                    if (playerTile.playerContent) {
+                                        setShowContentFullInfo(true)
+                                        setFullInfoModalContent(playerTile.playerContent.content)
+                                    }
                                 }}
                             />
                         </div> : tileDetailsShowMode == 'simple' ?
-                            <div className='fixed inset-0 rounded-full flex items-center justify-center bg-transparent bg-opacity-40 cursor-pointer' onClick={() => {
+                            <div className='fixed inset-0 rounded-full flex items-center justify-center bg-transparent bg-opacity-40 ' onClick={() => {
                                 if (playerTile.playerContent) {
                                     setShowContentFullInfo(true)
                                     setFullInfoModalContent(playerTile.playerContent.content)

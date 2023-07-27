@@ -9,7 +9,7 @@ import { GridLoader } from "react-spinners";
 
 const Rules: NextPage = () => {
   const { data, error } = api.rules.getRules.useQuery(undefined, {
-    cacheTime: 9999999999,
+    cacheTime: 2147483647,
   })
 
   return (
