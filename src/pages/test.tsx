@@ -25,11 +25,6 @@ const GameField: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center">
-        <img src={url} alt="field" className="w-16 h-16" />
-        <Canvas className="w-64 h-64">
-          <PlayerSphere />
-          <OrbitControls />
-        </Canvas>
       </main>
     </>
   );
