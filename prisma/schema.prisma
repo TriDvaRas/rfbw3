@@ -240,10 +240,11 @@ model Image {
     createdAt    DateTime     @default(now()) @db.Timestamptz(6)
     uploadStatus UploadStatus @default(PENDING)
 
-    addedBy   User      @relation(fields: [addedById], references: [id], onDelete: Cascade, onUpdate: NoAction)
+    addedBy   User       @relation(fields: [addedById], references: [id], onDelete: Cascade, onUpdate: NoAction)
     addedById String
     players   Player[]
     contents  Content[]
+    ShopItem  ShopItem[]
 }
 
 enum UploadStatus {
@@ -496,10 +497,13 @@ model Truth {
     label      String  @db.VarChar(20)
     truth      String
     isUnlocked Boolean @default(false)
-    lockedById String?
+    lockedById Int?
+    lockedBy   Truth?  @relation("truth_locks", fields: [lockedById], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
     addedById String @db.Uuid
     addedBy   Player @relation(fields: [addedById], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+    lockedTruths Truth[] @relation("truth_locks")
 }
 
 enum TruthCategory {
@@ -520,7 +524,7 @@ enum TruthRarity {
 }
 
 model ShopItem {
-    id        String   @id @db.Uuid
+    id        String   @id @default(uuid()) @db.Uuid
     createdAt DateTime @default(now()) @db.Timestamptz(6)
     updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
@@ -531,7 +535,10 @@ model ShopItem {
 
     label       String
     price       Int
-    description String @db.VarChar(128)
+    description String
+
+    imageUrl String
+    image    Image  @relation(fields: [imageUrl], references: [url], onDelete: Cascade, onUpdate: NoAction)
 
     stock ShopItemStock[]
 }

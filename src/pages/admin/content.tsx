@@ -56,7 +56,8 @@ const Admin: NextPage = () => {
             <ButtonGroup >
               <Button wide color="info" onClick={() => router.push('/admin/content')}>Content Approval</Button>
               <Button wide variant="outline" color="info" onClick={() => router.push('/admin/players')}>Player Management</Button>
-              <Button wide variant="outline" color="info">3rd Button to fill the space</Button>
+              <Button variant="outline" color="info" onClick={() => router.push('/admin/shop')}>Shop</Button>
+              <Button variant="outline" color="info" onClick={() => router.push('/admin/truth')}>Truth</Button>
             </ButtonGroup>
           </div>
           <div className="flex flex-row gap-2 justify-center items-center">

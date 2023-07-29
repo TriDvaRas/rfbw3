@@ -21,6 +21,9 @@ export const playerContentFinishModalContentAtom = atom<(PlayerContent & {
 //* Truth Gallery Modal
 export const showTruthGalleryModalAtom = atom(false);
 
+//* Shop Modal
+export const showShopModalAtom = atom(false);
+
 
 //* ADMIN
 //*

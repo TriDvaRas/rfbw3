@@ -1,4 +1,4 @@
-import { Loader, OrbitControls, Stars } from "@react-three/drei";
+import { Loader, OrbitControls, QuadraticBezierLine, Stars } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, HueSaturation, Noise, Vignette } from '@react-three/postprocessing';
 import { useControls } from "leva";
@@ -15,7 +15,10 @@ import { SandPlane } from "./GameField/SandPlane";
 import Sun from "./GameField/Sun";
 import { WaterPlane } from "./GameField/WaterPlane";
 import { Book } from "./Models/Book";
+import { Chicken } from "./Models/Chicken";
 import { HomeIsland } from "./Models/HomeIsland";
+import { useAtom } from "jotai";
+import { showShopModalAtom } from "../../utils/atoms";
 const DEFAULT_CAMERA_HEIGHT = 15
 
 const GameCanvas = () => {
@@ -23,45 +26,27 @@ const GameCanvas = () => {
   const { data: me, status: meStatus } = api.players.getMyPlayer.useQuery()
   const { data: myTiles } = api.playerContent.getMy.useQuery()
   const [cameraHeight, setCameraHeight] = useLocalStorage('cameraHeight', DEFAULT_CAMERA_HEIGHT)
+
+  const [showShopModal, setShowShopModal] = useAtom(showShopModalAtom)
+
+
+
   const mazeRoot: [number, number] = me?.fieldRoot.split(',').map(x => +x) as [number, number] || [0, 0]
   const [zoom, setZoom] = useLocalStorage('fov', 1)
 
-  // const { azimuthAngle, polarAngle } = useControls({
-  //   azimuthAngle: {
-  //     value: -120,
-  //     min: -180,
-  //     max: 180,
-  //     step: 1,
-  //   },
-  //   polarAngle: {
-  //     value: 40,
-  //     min: -180,
-  //     max: 180,
-  //     step: 1,
-  //   },
-  // })
   const polarAngle = 40
   const azimuthAngle = -120
-  // const {saturation} = useControls("effects", {
-  //   saturation: {
-  //     value: 0,
-  //     min: -1,
-  //     max: 1,
-  //     step: 0.01,
-  //   },
-  // })
-  // const CanvasWithTRPC = api.withTRPC(() => )
 
   // useControls to change onject pos, scale and rotation
-  // const { x, y, z, rotX, rotY, rotZ, scale } = useControls("HomeIsland", {
-  //   x: { step: 0.01, value: 0.55, },
-  //   y: { step: 0.01, value: -0.09, },
-  //   z: { step: 0.01, value: -0.3, },
-  //   rotX: { step: 0.01, value: 0, },
-  //   rotY: { step: 0.01, value: 0, },
-  //   rotZ: { step: 0.01, value: 0, },
-  //   scale: { step: 0.01, value: 1, },
-  // })
+  const { x, y, z, rotX, rotY, rotZ, scale } = useControls("HomeIsland", {
+    x: { step: 0.01, value: 0, },
+    y: { step: 0.01, value: 1, },
+    z: { step: 0.01, value: 0, },
+    rotX: { step: 0.01, value: 0, },
+    rotY: { step: 0.01, value: 0, },
+    rotZ: { step: 0.01, value: 0, },
+    scale: { step: 0.0001, value: 0.01, },
+  })
 
   return (
     <div className="min-h-screen min-w-full ">
@@ -85,6 +70,21 @@ const GameCanvas = () => {
               console.log('book clicked');
             }}
           />
+          <Chicken 
+            position={[-0.09, 0.84, 0.82]}  
+            rotation={[0.09, -1.07, -0.07]}
+            scale={[0.0025, 0.0025, 0.0025]}
+            onClick={()=>{
+              setShowShopModal(true)
+            }}
+          />
+          <QuadraticBezierLine 
+            start={[0, 0, 0]}
+            end={[x,y,z]}
+            color="red"
+            lineWidth={4}
+          />
+
           <HomeIsland />
           {/* <Cloud position={[0, -20, 0]}
               opacity={0.5}
@@ -94,7 +94,7 @@ const GameCanvas = () => {
               depth={1.5} // Z-dir depth
               segments={240} // Number of particles
             /> */}
-          <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+          <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
           <OrbitControls ref={ref} makeDefault
             enableRotate={true}
             enableZoom={false}

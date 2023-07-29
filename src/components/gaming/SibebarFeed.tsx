@@ -144,7 +144,7 @@ function FeedItemCenter({ feedItem }: FeedItemProps) {
         {!!feedItem.entropyDelta && <div className='' title='Энтропия' >{feedItem.entropyDelta > 0 && '+'}{feedItem.entropyDelta}</div>}
         {!!feedItem.entropyDelta && <GiAbstract064 title='Энтропия' className='text-purple-500 drop-shadow' />}
     </div>
-    const time = <TimeAgo className='text-sm' datetime={feedItem.createdAt} locale='ru' title={`${moment(feedItem.createdAt).format('DD.MM hh:mm:ss')}`} />
+    const time = <TimeAgo className='text-sm' datetime={feedItem.createdAt} locale='ru' title={`${moment(feedItem.createdAt).format('DD.MM.YYYY HH:mm:ss')}`} />
     switch (feedItem.type) {
         case 'contentDropped':
             cent = <div className='flex flex-col justify-center items-center h-full w-full'>

@@ -1,11 +1,15 @@
 import fs from 'fs';
 import { z } from 'zod';
+import _ from 'lodash';
 import {
   adminProtectedProcedure,
   createTRPCRouter
 } from "~/server/api/trpc";
+import { shopItemFormSchema, truthFormSchema } from '../../../utils/forms';
+import { TRPCClientError } from '@trpc/client';
 
 export const adminRouter = createTRPCRouter({
+  //! CONTENT
   getContentList: adminProtectedProcedure.input(z.object({
     types: z.enum(["game", "movie", "anime"]).array(),
     isApproved: z.boolean().optional(),
@@ -63,4 +67,67 @@ export const adminRouter = createTRPCRouter({
       }
     });
   }),
+
+  //! SHOP
+  getShopItems: adminProtectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.shopItem.findMany({
+      include: {
+        _count: {
+          select: {
+            stock: true,
+          }
+        }
+      }
+    });
+  }),
+  createShopItem: adminProtectedProcedure.input(shopItemFormSchema).mutation(({ ctx, input }) => {
+    return ctx.prisma.shopItem.create({
+      data: {
+        label: input.label,
+        description: input.description,
+        price: input.price,
+        defaultStock: input.defaultStock,
+        stockOwnershipRule: input.stockOwnerRule,
+        stockRefreshRule: input.stockRefreshRule,
+        image: {
+          connect: {
+            url: input.imageUrl
+          }
+        }
+      }
+    });
+  }),
+
+  //! truth
+  getTruths: adminProtectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.truth.findMany({
+      include: {
+        addedBy: true,
+      }
+    });
+  }),
+  createTruth: adminProtectedProcedure.input(truthFormSchema).mutation(async ({ ctx, input }) => {
+    const player = await ctx.prisma.player.findUnique({
+      where: {
+        userId: ctx.session.user.id
+      }
+    });
+    if (!player) 
+      throw new TRPCClientError("Only players can add truths.");
+    
+    return ctx.prisma.truth.create({
+      data: {
+        id: input.id,
+        label: input.label,
+        truth: input.truth,
+        lockedById: input.lockedById,
+        category: input.category,
+        rarity: input.rarity,
+        addedById: player.id,
+      }
+    });
+  }),
+
+
+
 });
