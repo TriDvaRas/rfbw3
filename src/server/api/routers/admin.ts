@@ -112,15 +112,15 @@ export const adminRouter = createTRPCRouter({
         userId: ctx.session.user.id
       }
     });
-    if (!player) 
+    if (!player)
       throw new TRPCClientError("Only players can add truths.");
-    
+
     return ctx.prisma.truth.create({
       data: {
         id: input.id,
         label: input.label,
         truth: input.truth,
-        lockedById: input.lockedById,
+        lockedById: input.lockedById ? input.lockedById : null,
         category: input.category,
         rarity: input.rarity,
         addedById: player.id,

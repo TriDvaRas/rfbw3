@@ -23,7 +23,7 @@ function LazyImage({ height, src, width, className, alt,imageClassName }: Props)
 
     return <div style={customImgDimension} className={`flex ${className}  bg-black bg-opacity-20`}>
         {
-            imageLoadedState == 0 && <NextImage quality={20} src={src} alt={alt} width={_width} height={_height} className={`min-w-full min-h-full object-cover blur ${imageClassName}`}
+            imageLoadedState == 0 && <NextImage quality={10} src={src} alt={alt} width={_width} height={_height} className={`min-w-full min-h-full object-cover blur ${imageClassName}`}
                 onLoadingComplete={(e) => {
                     const containerMult = width / height
                     const naturalMult = e.naturalWidth / e.naturalHeight
@@ -44,13 +44,13 @@ function LazyImage({ height, src, width, className, alt,imageClassName }: Props)
                 }} />
         }
         {
-            imageLoadedState == 1 && <NextImage quality={90} src={src} alt={''} width={_width} height={_height} className={`min-w-full min-h-full object-cover blur ${imageClassName}`}
+            imageLoadedState == 1 && <NextImage quality={80} src={src} alt={''} width={_width} height={_height} className={`min-w-full min-h-full object-cover blur ${imageClassName}`}
                 onLoadingComplete={(e) => {
                     setImageLoadedState(2)
                 }} />
         }
         {
-            imageLoadedState == 2 && <NextImage quality={90} src={src} alt={''} width={_width} height={_height} className={`min-w-full min-h-full object-cover ${imageClassName}`} />
+            imageLoadedState == 2 && <NextImage quality={80} src={src} alt={''} width={_width} height={_height} className={`min-w-full min-h-full object-cover ${imageClassName}`} />
         }
 
         {/* <div className='absolute left-0 top-0'>{imageLoadedState}</div> */}

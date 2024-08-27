@@ -169,7 +169,7 @@ function CreateTruthModal({ show, onClickBackdrop }: {
         )}
 
         <Form.Label title="Label" />
-        <Input  {...register('label')} maxLength={16} className="w-full" color={errors.label ? 'error' : undefined} />
+        <Input  {...register('label')} className="w-full" color={errors.label ? 'error' : undefined} />
         {errors.label && (
           <span className=" label-text-alt text-error block mt-0.5 ms-3">
             {errors.label.message}

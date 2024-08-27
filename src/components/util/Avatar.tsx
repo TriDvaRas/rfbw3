@@ -122,7 +122,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         return (
           <div className={`${imgClasses} ${imageClassName}`} style={customImgDimension}>
             {
-              loadState == 0 && <Image quality={20} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle blur`}
+              loadState == 0 && <Image quality={10} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle blur`}
                 onLoadingComplete={(e) => {
                   const containerMult = 1
                   const naturalMult = e.naturalWidth / e.naturalHeight
@@ -145,13 +145,13 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
                 }} />
             }
             {
-              loadState == 1 && <Image quality={90} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle blur`}
+              loadState == 1 && <Image quality={80} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle blur`}
                 onLoadingComplete={(e) => {
                   setImageLoadedState(2)
                 }} />
             }
             {
-              loadState == 2 && <Image quality={90} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle`} />
+              loadState == 2 && <Image quality={80} src={src} alt={''} width={_width} height={_height} className={`mask mask-circle`} />
             }
           </div>
         )

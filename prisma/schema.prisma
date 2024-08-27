@@ -494,7 +494,7 @@ model Truth {
     category TruthCategory
     rarity   TruthRarity
 
-    label      String  @db.VarChar(20)
+    label      String  
     truth      String
     isUnlocked Boolean @default(false)
     lockedById Int?
